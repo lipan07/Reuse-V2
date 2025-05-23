@@ -28,6 +28,7 @@ const LocationPicker = ({ navigation }) => {
         longitude: 77.209,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
+        addressText: 'New Delhi, India', // default
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [predictions, setPredictions] = useState([]);
@@ -76,13 +77,15 @@ const LocationPicker = ({ navigation }) => {
 
             if (json.result?.geometry?.location) {
                 const { lat, lng } = json.result.geometry.location;
-                skipNextApiCallRef.current = true; // Set flag before updating query
-                setSearchQuery(json.result.formatted_address);
+                const addressText = json.result.formatted_address || '';
+                skipNextApiCallRef.current = true;
+                setSearchQuery(addressText);
                 setLocation({
                     latitude: lat,
                     longitude: lng,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
+                    addressText,
                 });
                 setPredictions([]);
             }
