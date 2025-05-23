@@ -48,13 +48,23 @@ const Header = () => {
 
    return (
       <>
-         <StatusBar
-            backgroundColor="#007BFF"
-            barStyle="light-content"
-            translucent={true}
-         />
-         <View style={[styles.headerContainer, { paddingTop: statusBarHeight }]}>
-            <View style={styles.contentContainer}>
+        <StatusBar
+         backgroundColor="#007BFF"
+         barStyle="light-content"
+         translucent={true}
+      />
+      {/* Blue background for status bar area */}
+      <View style={{
+         position: 'absolute',
+         top: 0,
+         left: 0,
+         right: 0,
+         height: statusBarHeight,
+         backgroundColor: '#007BFF',
+         zIndex: 1,
+      }} />
+      <View style={[styles.headerContainer, { paddingTop: statusBarHeight }]}>
+         <View style={styles.contentContainer}>
                <View style={styles.logoContainer}>
                   <Image
                      source={{ uri: 'https://i.pinimg.com/originals/92/4c/af/924cafad941065f4d5c03ca5423bfcd3.gif' }}
@@ -80,7 +90,7 @@ const Header = () => {
                      <Ionicons
                         name="location-outline"
                         size={20}
-                        color="#fff"
+                        color="#007BFF"
                         style={styles.locationIcon}
                      />
                   </TouchableOpacity>
@@ -92,12 +102,12 @@ const Header = () => {
 };
 
 const styles = StyleSheet.create({
-   headerContainer: {
-      backgroundColor: '#007BFF',
+  headerContainer: {
+      backgroundColor: 'transparent',
       height: Platform.select({
-         ios: normalizeVertical(90),
-         android: normalizeVertical(90),
-         default: normalizeVertical(70)
+         ios: normalizeVertical(70),
+         android: normalizeVertical(80),
+         default: normalizeVertical(80)
       }),
       paddingHorizontal: normalize(12),
    },
@@ -108,8 +118,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: Platform.select({
          ios: normalizeVertical(4),
-         android: normalizeVertical(8),
-         default: normalizeVertical(8)
+         android: normalizeVertical(1),
+         default: normalizeVertical(1)
       }),
    },
    logoContainer: {
@@ -121,6 +131,8 @@ const styles = StyleSheet.create({
       width: normalize(32),
       height: normalize(32),
       resizeMode: 'contain',
+      borderColor: '#007BFF',
+      borderWidth: 1,
       marginRight: normalize(8),
    },
    titleContainer: {
@@ -130,12 +142,12 @@ const styles = StyleSheet.create({
    appName: {
       fontSize: normalize(16),
       fontWeight: 'bold',
-      color: '#FFFFFF',
+      color: '#007BFF',
       includeFontPadding: false,
    },
    appSubName: {
       fontSize: normalize(12),
-      color: '#FFFFFF',
+      color: '#007BFF',
       includeFontPadding: false,
       marginTop: -normalizeVertical(2),
    },
@@ -152,7 +164,7 @@ const styles = StyleSheet.create({
       marginLeft: normalize(8),
    },
    addressText: {
-      color: '#FFFFFF',
+      color: '#007BFF',
       fontSize: normalize(12),
       maxWidth: width * 0.5,
       includeFontPadding: false,

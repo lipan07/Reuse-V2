@@ -165,13 +165,14 @@ const Login = () => {
 
    const handleOtpSubmit = async () => {
       try {
+         console.log(`${process.env.BASE_URL}/login`);
          const response = await fetch(`${process.env.BASE_URL}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phoneNumber: `${phoneNumber}`, otp }),
          });
-
          const data = await response.json();
+         console.log(data);
 
          if (response.ok) {
             await AsyncStorage.multiSet([

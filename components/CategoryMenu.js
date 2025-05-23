@@ -11,13 +11,13 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
   const categories = [
     { id: null, name: 'All', icon: 'apps', color: '#007bff' },
     { id: '1', name: 'Cars', icon: 'car', color: '#6495ED' },
-    { id: '2', name: 'Homes', icon: 'home', color: '#4682B4' },
+    { id: '2', name: 'Property', icon: 'home', color: '#4682B4' },
     { id: '7', name: 'Phones', icon: 'phone-portrait', color: '#32CD32' },
     { id: '29', name: 'Tech', icon: 'tv', color: '#FFD700' },
     { id: '24', name: 'Bikes', icon: 'bicycle', color: '#D2691E' },
     { id: '45', name: 'Furniture', icon: 'bed', color: '#8A2BE2' },
     { id: '51', name: 'Fashion', icon: 'shirt', color: '#FF69B4' },
-    // { id: '55', name: 'Books', icon: 'book', color: '#FF6347' },
+    { id: '55', name: 'Books', icon: 'book', color: '#FF6347' },
   ];
 
   const renderItem = ({ item }) => {
@@ -37,7 +37,7 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
         ]}>
           <Icon
             name={item.icon}
-            size={normalize(22)}
+            size={normalize(28)}
             color={isSelected ? '#007bff' : item.color}
           />
         </View>
@@ -58,10 +58,10 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
         data={categories}
         renderItem={renderItem}
         keyExtractor={(item) => item.id || 'all'}
-        numColumns={4}
-        columnWrapperStyle={styles.columnWrapper}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        scrollEnabled={false}
+        scrollEnabled={true}
       />
     </View>
   );
@@ -88,11 +88,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: normalize(4),
   },
   categoryItem: {
-    width: width / 4.5,
+    width: normalize(72), // or any fixed width you prefer
     alignItems: 'center',
-    padding: normalize(10),
+    padding: normalize(4),
     borderRadius: normalize(12),
     backgroundColor: '#f8f9fa',
+    marginRight: normalize(8), // add spacing between items
   },
   iconContainer: {
     backgroundColor: 'rgba(255,255,255,0.9)',
