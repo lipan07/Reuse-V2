@@ -89,27 +89,52 @@ const AppNavigator = () => {
           component={ImageViewer}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="EditProfilePage"
+          component={EditProfilePage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AccountPage"
+          component={AccountPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="LocationPicker"
+          component={LocationPicker}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProductDetails"
+          component={ProductDetails}
+          options={{ headerShown: false }}
+        />
         {/* <Stack.Screen name="Login" component={Login} /> */}
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="FilterScreen" component={FilterScreen} />
-        <Stack.Screen name="ProductDetails" component={ProductDetails} />
+        {/* <Stack.Screen name="ProductDetails" component={ProductDetails} /> */}
         <Stack.Screen name="FullScreenMap" component={FullScreenMap} />
         {/* <Stack.Screen name="ImageViewer" component={ImageViewer} /> */}
         <Stack.Screen name="ChatBox" component={ChatBox} />
         <Stack.Screen name="ChatList" component={ChatList} />
         <Stack.Screen name="MyAdsPage" component={MyAdsPage} />
         <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="EditProfilePage" component={EditProfilePage} />
-        <Stack.Screen name="AccountPage" component={AccountPage} />
+        {/* <Stack.Screen name="EditProfilePage" component={EditProfilePage} /> */}
+        {/* <Stack.Screen name="AccountPage" component={AccountPage} /> */}
         <Stack.Screen name="MyNetwork" component={MyNetwork} />
         <Stack.Screen name="FollowersPage" component={FollowersPage} />
         <Stack.Screen name="MyFollowersPage" component={MyFollowersPage} />
         <Stack.Screen name="FollowingPage" component={FollowingPage} />
         <Stack.Screen name="PackagePage" component={PackagePage} />
-        <Stack.Screen name="Settings" component={Settings} />
+        {/* <Stack.Screen name="Settings" component={Settings} /> */}
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="CompanyDetailsPage" component={CompanyDetailsPage} />
-        <Stack.Screen name="LocationPicker" component={LocationPicker} />
+        {/* <Stack.Screen name="LocationPicker" component={LocationPicker} /> */}
         {/* Add product section */}
         <Stack.Screen name="ProductAddPage" component={ProductAddPage} />
         <Stack.Screen name="ProductForm" component={ProductForm} />
