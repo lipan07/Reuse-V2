@@ -90,30 +90,32 @@ const countryCodes = [
 const AlertModal = ({ visible, type, title, message, onClose }) => {
    const getIconConfig = () => {
       switch (type) {
-         case 'success': return { name: 'check-circle', color: '#4CAF50' };
-         case 'error': return { name: 'error-outline', color: '#f44336' };
-         case 'warning': return { name: 'warning', color: '#FF9800' };
-         default: return { name: 'info', color: '#2196F3' };
+         case 'success': return { name: 'check-circle', color: '#4CAF50', bg: '#E8F5E9' };
+         case 'error': return { name: 'error-outline', color: '#f44336', bg: '#FFEBEE' };
+         case 'warning': return { name: 'warning', color: '#FF9800', bg: '#FFF8E1' };
+         default: return { name: 'info', color: '#2196F3', bg: '#E3F2FD' };
       }
    };
 
-   const { name, color } = getIconConfig();
+   const { name, color, bg } = getIconConfig();
 
    return (
       <Modal visible={visible} transparent animationType="fade">
          <TouchableWithoutFeedback onPress={onClose}>
             <View style={styles.alertModalOverlay}>
                <TouchableWithoutFeedback>
-                  <View style={styles.alertContainer}>
-                     <MaterialIcons name={name} size={48} color={color} style={styles.alertIcon} />
-                     <Text style={styles.alertTitle}>{title}</Text>
-                     <Text style={styles.alertMessage}>{message}</Text>
+                  <View style={styles.modernAlertContainer}>
+                     <View style={[styles.iconCircle, { backgroundColor: bg }]}>
+                        <MaterialIcons name={name} size={44} color={color} />
+                     </View>
+                     <Text style={styles.modernAlertTitle}>{title}</Text>
+                     <Text style={styles.modernAlertMessage}>{message}</Text>
                      <TouchableOpacity
-                        style={[styles.alertButton, { backgroundColor: color }]}
+                        style={[styles.modernAlertButton, { backgroundColor: color }]}
                         onPress={onClose}
-                        activeOpacity={0.8}
+                        activeOpacity={0.85}
                      >
-                        <Text style={styles.alertButtonText}>OK</Text>
+                        <Text style={styles.modernAlertButtonText}>OK</Text>
                      </TouchableOpacity>
                   </View>
                </TouchableWithoutFeedback>
@@ -292,38 +294,42 @@ const Login = () => {
 
             {/* Country Code Selection Modal */}
             <Modal visible={isModalVisible} transparent animationType="slide">
-               <View style={styles.modalOverlay}>
-                  <View style={styles.modalContainer}>
-                     <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Select Country</Text>
-                        <TouchableOpacity
-                           onPress={() => setIsModalVisible(false)}
-                           style={styles.closeButton}
-                        >
-                           <MaterialIcons name="close" size={24} color="#666" />
-                        </TouchableOpacity>
-                     </View>
+               <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+                  <View style={styles.modalOverlay}>
+                     <TouchableWithoutFeedback>
+                        <View style={styles.modalContainer}>
+                           <View style={styles.modalHeader}>
+                              <Text style={styles.modalTitle}>Select Country</Text>
+                              <TouchableOpacity
+                                 onPress={() => setIsModalVisible(false)}
+                                 style={styles.closeButton}
+                              >
+                                 <MaterialIcons name="close" size={24} color="#666" />
+                              </TouchableOpacity>
+                           </View>
 
-                     <View style={styles.searchContainer}>
-                        <MaterialIcons name="search" size={20} color="#666" style={styles.searchIcon} />
-                        <TextInput
-                           style={styles.searchInput}
-                           placeholder="Search country or code"
-                           placeholderTextColor="#999"
-                           value={searchQuery}
-                           onChangeText={setSearchQuery}
-                        />
-                     </View>
+                           <View style={styles.searchContainer}>
+                              <MaterialIcons name="search" size={20} color="#666" style={styles.searchIcon} />
+                              <TextInput
+                                 style={styles.searchInput}
+                                 placeholder="Search country or code"
+                                 placeholderTextColor="#999"
+                                 value={searchQuery}
+                                 onChangeText={setSearchQuery}
+                              />
+                           </View>
 
-                     <FlatList
-                        data={filteredCountries}
-                        keyExtractor={(item) => item.code}
-                        renderItem={renderCountryCodeItem}
-                        keyboardDismissMode="on-drag"
-                        contentContainerStyle={styles.countryList}
-                     />
+                           <FlatList
+                              data={filteredCountries}
+                              keyExtractor={(item) => item.code}
+                              renderItem={renderCountryCodeItem}
+                              keyboardDismissMode="on-drag"
+                              contentContainerStyle={styles.countryList}
+                           />
+                        </View>
+                     </TouchableWithoutFeedback>
                   </View>
-               </View>
+               </TouchableWithoutFeedback>
             </Modal>
          </View>
       </>
@@ -333,181 +339,207 @@ const Login = () => {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      padding: 20,
-      backgroundColor: '#f0f4f8',
+      padding: 32,
+      backgroundColor: '#f8f9fa',
       justifyContent: 'center',
    },
    loginTitle: {
-      fontSize: 28,
-      fontWeight: '700',
-      color: '#2c3e50',
+      fontSize: 32,
+      fontWeight: '800',
+      color: '#2d3436',
       marginBottom: 8,
       textAlign: 'center',
+      letterSpacing: -0.5,
    },
    loginSubtitle: {
       fontSize: 16,
       color: '#7f8c8d',
-      marginBottom: 32,
+      marginBottom: 40,
       textAlign: 'center',
+      fontWeight: '500',
    },
    phoneInputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 20,
+      marginBottom: 24,
+      backgroundColor: '#fff',
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
    },
    countryCodeInput: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      height: 50,
-      borderColor: '#ddd',
-      borderWidth: 1,
-      borderRadius: 12,
+      height: 56,
       paddingHorizontal: 16,
       backgroundColor: '#fff',
-      marginRight: 12,
-      minWidth: 100,
    },
    countryCodeText: {
       fontSize: 16,
-      color: '#333',
+      color: '#2d3436',
+      fontWeight: '600',
+      marginRight: 8,
    },
    phoneNumberInput: {
       flex: 1,
-      height: 50,
-      borderColor: '#ddd',
-      borderWidth: 1,
-      borderRadius: 12,
+      height: 56,
       paddingHorizontal: 16,
-      backgroundColor: '#fff',
       fontSize: 16,
-      color: '#333',
+      color: '#2d3436',
+      fontWeight: '500',
    },
    input: {
-      height: 50,
-      borderColor: '#3498db',
-      borderWidth: 2,
-      borderRadius: 12,
-      paddingHorizontal: 16,
+      height: 56,
+      borderWidth: 0,
+      borderRadius: 16,
+      paddingHorizontal: 20,
       backgroundColor: '#fff',
       marginBottom: 20,
       fontSize: 16,
-      color: '#333',
+      color: '#2d3436',
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
    },
    loginButton: {
-      backgroundColor: '#3498db',
-      height: 50,
-      borderRadius: 12,
+      backgroundColor: '#0984e3',
+      height: 56,
+      borderRadius: 16,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 16,
+      marginTop: 24,
+      elevation: 4,
+      shadowColor: '#0984e3',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
    },
    buttonText: {
       color: '#fff',
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: '700',
+      letterSpacing: 0.5,
    },
-   logoutButton: {
-      backgroundColor: '#e74c3c',
-      height: 50,
-      borderRadius: 12,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 16,
-   },
-   // Alert Modal Styles
+   // Modern Alert Modal Styles
    alertModalOverlay: {
       flex: 1,
       backgroundColor: 'rgba(0,0,0,0.4)',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 20,
-   },
-   alertContainer: {
-      backgroundColor: '#fff',
-      borderRadius: 16,
       padding: 24,
-      width: '90%',
+   },
+   modernAlertContainer: {
+      backgroundColor: '#fff',
+      borderRadius: 24,
+      padding: 32,
+      width: '100%',
+      alignItems: 'center',
+      elevation: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.15,
+      shadowRadius: 24,
+   },
+   iconCircle: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 24,
+   },
+   modernAlertTitle: {
+      fontSize: 24,
+      fontWeight: '800',
+      color: '#2d3436',
+      marginBottom: 12,
+      textAlign: 'center',
+   },
+   modernAlertMessage: {
+      fontSize: 16,
+      color: '#636e72',
+      marginBottom: 28,
+      textAlign: 'center',
+      lineHeight: 24,
+      fontWeight: '400',
+   },
+   modernAlertButton: {
+      borderRadius: 14,
+      paddingVertical: 14,
+      paddingHorizontal: 44,
+      overflow: 'hidden',
+      alignSelf: 'stretch',
       alignItems: 'center',
    },
-   alertTitle: {
-      fontSize: 20,
-      fontWeight: '600',
-      color: '#2c3e50',
-      marginVertical: 8,
-      textAlign: 'center',
-   },
-   alertMessage: {
-      fontSize: 16,
-      color: '#666',
-      marginBottom: 20,
-      textAlign: 'center',
-      lineHeight: 22,
-   },
-   alertButton: {
-      borderRadius: 8,
-      paddingVertical: 12,
-      paddingHorizontal: 30,
-      marginTop: 10,
-   },
-   alertButtonText: {
+   modernAlertButtonText: {
       color: 'white',
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: '700',
+      letterSpacing: 0.5,
    },
-
-   // Updated Country Code Modal Styles
+   // Country Code Modal
    modalOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: 'rgba(0,0,0,0.4)',
       justifyContent: 'flex-end',
    },
    modalContainer: {
       backgroundColor: '#fff',
-      height: '50%',
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
+      height: '60%',
+      borderTopLeftRadius: 28,
+      borderTopRightRadius: 28,
+      paddingTop: 16,
    },
    modalHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 16,
+      padding: 20,
       borderBottomWidth: 1,
-      borderBottomColor: '#eee',
+      borderBottomColor: '#f1f2f6',
+   },
+   modalTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: '#2d3436',
    },
    searchContainer: {
-      paddingHorizontal: 16,
-      marginVertical: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      marginLeft: 10,
+      marginRight: 10,
+      marginBottom: 12,
+      backgroundColor: '#f1f2f6',
+      borderRadius: 14,
+   },
+   searchIcon: {
+      marginLeft: 12,
+      marginRight: 8,
    },
    searchInput: {
-      height: 50,
-      backgroundColor: '#f5f5f5',
-      borderRadius: 12,
-      paddingLeft: 44,
+      flex: 1,
+      height: 52,
+      backgroundColor: 'transparent',
+      borderRadius: 14,
       fontSize: 16,
-      color: '#333',
-   },
-   countryList: {
-      paddingBottom: 20,
-      flexGrow: 1,
+      color: '#2d3436',
+      fontWeight: '500',
+      paddingLeft: 0, // Remove extra padding
    },
 
-   searchIcon: {
-      position: 'absolute',
-      left: 28,
-      top: 15,
-      zIndex: 1,
-   },
    countryCodeItem: {
-      paddingVertical: 16,
+      paddingVertical: 18,
       paddingHorizontal: 24,
       borderBottomWidth: 1,
-      borderBottomColor: '#f5f5f5',
-   },
-   countryCodeText: {
-      fontSize: 16,
-      color: '#333',
+      borderBottomColor: '#f1f2f6',
    },
 });
 
