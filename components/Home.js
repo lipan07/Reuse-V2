@@ -348,10 +348,10 @@ const Home = () => {
               initialFilters: { ...activeFilters, search, category: selectedCategory }
             })}
           >
-            <Icon name="filter-list" size={normalize(18)} color="#fff" />
+            <Icon name="filter-list" size={normalize(20)} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.searchButton} onPress={handleSearchPress}>
-            <Icon name="search" size={normalize(18)} color="#fff" />
+            <Icon name="search" size={normalize(20)} color="#fff" />
           </TouchableOpacity>
         </View>
         {/* {isLoading && products.length === 0 && (
