@@ -12,10 +12,12 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  StatusBar
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AddressAutocomplete from './AddressAutocomplete';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
@@ -25,6 +27,7 @@ const normalize = (size) => Math.round(scale * size);
 const normalizeVertical = (size) => Math.round(verticalScale * size);
 
 const EditProfilePage = () => {
+  const statusBarHeight = StatusBar.currentHeight || (Platform.OS === 'ios' ? 20 : 24);
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
@@ -166,151 +169,171 @@ const EditProfilePage = () => {
   }
 
   return (
-    <View style={styles.outerContainer}>
-      {/* Custom Modal */}
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.customModalOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.customModalContainer}>
-                <Text style={[
-                  styles.customModalTitle,
-                  modalType === 'success' && { color: '#28a745' },
-                  modalType === 'warning' && { color: '#ffc107' },
-                  modalType === 'danger' && { color: '#dc3545' }
-                ]}>
-                  {modalTitle}
-                </Text>
-                <Text style={styles.customModalText}>{modalMessage}</Text>
-                <TouchableOpacity
-                  style={styles.customModalButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.customModalButtonText}>Close</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.card}>
-            <Text style={styles.header}>Edit Profile</Text>
-            <TouchableOpacity style={styles.imagePicker} onPress={handleChooseImage}>
-              {userData.profileImage ? (
-                <Image source={{ uri: userData.profileImage }} style={styles.profileImage} />
-              ) : (
-                <Ionicons name="camera" size={40} color="#bbb" />
-              )}
-            </TouchableOpacity>
-            <View style={styles.section}>
-              <Text style={styles.sectionHeader}>Personal Details</Text>
-              <View style={styles.inputRow}>
+    <>
+      <StatusBar backgroundColor="#007BFF" barStyle="light-content" translucent={true} />
+      {/* Blue background for status bar area */}
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: statusBarHeight,
+        backgroundColor: '#007BFF',
+        zIndex: 1,
+      }} />
+      <View style={styles.outerContainer}>
+        {/* Custom Modal */}
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <View style={styles.customModalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.customModalContainer}>
+                  <Text style={[
+                    styles.customModalTitle,
+                    modalType === 'success' && { color: '#28a745' },
+                    modalType === 'warning' && { color: '#ffc107' },
+                    modalType === 'danger' && { color: '#dc3545' }
+                  ]}>
+                    {modalTitle}
+                  </Text>
+                  <Text style={styles.customModalText}>{modalMessage}</Text>
+                  <TouchableOpacity
+                    style={styles.customModalButton}
+                    onPress={() => setModalVisible(false)}
+                  >
+                    <Text style={styles.customModalButtonText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardView}
+        >
+          <ScrollView contentContainerStyle={styles.scrollView}>
+            <View style={styles.card}>
+              <Text style={styles.header}>Edit Profile</Text>
+              <TouchableOpacity style={styles.imagePicker} onPress={handleChooseImage}>
+                {userData.profileImage ? (
+                  <Image source={{ uri: userData.profileImage }} style={styles.profileImage} />
+                ) : (
+                  <Ionicons name="camera" size={40} color="#bbb" />
+                )}
+              </TouchableOpacity>
+              <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Personal Details</Text>
+                <View style={styles.inputRow}>
+                  <TextInput
+                    style={[styles.input, { marginRight: 8 }]}
+                    placeholder="First Name"
+                    value={userData.firstName}
+                    onChangeText={(text) => handleChange('firstName', text)}
+                    placeholderTextColor="#aaa"
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Last Name"
+                    value={userData.lastName}
+                    onChangeText={(text) => handleChange('lastName', text)}
+                    placeholderTextColor="#aaa"
+                  />
+                </View>
                 <TextInput
-                  style={[styles.input, { marginRight: 8 }]}
-                  placeholder="First Name"
-                  value={userData.firstName}
-                  onChangeText={(text) => handleChange('firstName', text)}
+                  style={styles.input}
+                  placeholder="Email"
+                  value={userData.email}
+                  onChangeText={(text) => handleChange('email', text)}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                   placeholderTextColor="#aaa"
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="Last Name"
-                  value={userData.lastName}
-                  onChangeText={(text) => handleChange('lastName', text)}
+                  placeholder="Phone Number"
+                  value={userData.phoneNumber}
+                  onChangeText={(text) => handleChange('phoneNumber', text)}
+                  keyboardType="phone-pad"
                   placeholderTextColor="#aaa"
                 />
               </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={userData.email}
-                onChangeText={(text) => handleChange('email', text)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor="#aaa"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Phone Number"
-                value={userData.phoneNumber}
-                onChangeText={(text) => handleChange('phoneNumber', text)}
-                keyboardType="phone-pad"
-                placeholderTextColor="#aaa"
-              />
+              <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Business Details</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Business Name"
+                  value={userData.businessName}
+                  onChangeText={(text) => handleChange('businessName', text)}
+                  placeholderTextColor="#aaa"
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Business Type"
+                  value={userData.businessType}
+                  onChangeText={(text) => handleChange('businessType', text)}
+                  placeholderTextColor="#aaa"
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Business Website"
+                  value={userData.businessWebsite}
+                  onChangeText={(text) => handleChange('businessWebsite', text)}
+                  keyboardType="url"
+                  autoCapitalize="none"
+                  placeholderTextColor="#aaa"
+                />
+              </View>
+
+              {/* Address Autocomplete Field */}
+              <View style={styles.section}>
+                <Text style={styles.sectionHeader}>Address</Text>
+                <AddressAutocomplete
+                  initialAddress={userData.businessAddress}
+                  onAddressSelect={({ address }) => handleChange('businessAddress', address)}
+                  styles={{
+                    input: styles.input,
+                    predictionText: { fontSize: 15, color: '#333' }
+                  }}
+                />
+              </View>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionHeader}>About You</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  placeholder="Tell us about yourself"
+                  value={userData.bio}
+                  onChangeText={(text) => handleChange('bio', text)}
+                  multiline
+                  numberOfLines={4}
+                  placeholderTextColor="#aaa"
+                />
+              </View>
             </View>
-            <View style={styles.section}>
-              <Text style={styles.sectionHeader}>Business Details</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Business Name"
-                value={userData.businessName}
-                onChangeText={(text) => handleChange('businessName', text)}
-                placeholderTextColor="#aaa"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Business Type"
-                value={userData.businessType}
-                onChangeText={(text) => handleChange('businessType', text)}
-                placeholderTextColor="#aaa"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Business Address"
-                value={userData.businessAddress}
-                onChangeText={(text) => handleChange('businessAddress', text)}
-                placeholderTextColor="#aaa"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Business Website"
-                value={userData.businessWebsite}
-                onChangeText={(text) => handleChange('businessWebsite', text)}
-                keyboardType="url"
-                autoCapitalize="none"
-                placeholderTextColor="#aaa"
-              />
-            </View>
-            <View style={styles.section}>
-              <Text style={styles.sectionHeader}>About You</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Tell us about yourself"
-                value={userData.bio}
-                onChangeText={(text) => handleChange('bio', text)}
-                multiline
-                numberOfLines={4}
-                placeholderTextColor="#aaa"
-              />
-            </View>
+          </ScrollView>
+          <View style={styles.fixedButtonContainer}>
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={handleSave}
+              disabled={isSubmitting}
+              activeOpacity={0.8}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.saveButtonText}>Save Changes</Text>
+              )}
+            </TouchableOpacity>
           </View>
-        </ScrollView>
-        <View style={styles.fixedButtonContainer}>
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleSave}
-            disabled={isSubmitting}
-            activeOpacity={0.8}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <Text style={styles.saveButtonText}>Save Changes</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView >
-    </View >
+        </KeyboardAvoidingView >
+      </View >
+    </>
   );
 };
 
@@ -332,6 +355,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     padding: normalize(18),
+    paddingTop: normalize(50),
     elevation: 4,
   },
   header: {
@@ -366,7 +390,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   section: {
-    marginBottom: normalizeVertical(18),
+    marginBottom: normalizeVertical(13),
   },
   sectionHeader: {
     fontSize: normalize(14),
@@ -396,19 +420,6 @@ const styles = StyleSheet.create({
     height: normalizeVertical(90),
     textAlignVertical: 'top',
     marginBottom: normalize(60),
-  },
-  saveButton: {
-    backgroundColor: '#007BFF',
-    paddingVertical: normalizeVertical(14),
-    borderRadius: normalize(10),
-    alignItems: 'center',
-    marginTop: normalizeVertical(10),
-    marginBottom: normalizeVertical(4),
-    shadowColor: '#007BFF',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-    elevation: 2,
   },
   saveButtonText: {
     color: '#fff',
