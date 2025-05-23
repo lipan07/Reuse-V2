@@ -10,7 +10,7 @@ import {
    Dimensions
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
@@ -46,25 +46,48 @@ const Header = () => {
       fetchAddress();
    }, []);
 
+   // Fetch address from AsyncStorage
+   const fetchAddress = async () => {
+      const savedAddress = await AsyncStorage.getItem('defaultAddress');
+      if (savedAddress) {
+         const parsed = JSON.parse(savedAddress);
+         setAddress(parsed.addressText || "Set Location");
+      } else {
+         setAddress("Set Location");
+      }
+   };
+
+   useEffect(() => {
+      fetchAddress();
+   }, []);
+
+   // Refresh address when screen comes into focus
+   useFocusEffect(
+      React.useCallback(() => {
+         fetchAddress();
+      }, [])
+   );
+
+
    return (
       <>
-        <StatusBar
-         backgroundColor="#007BFF"
-         barStyle="light-content"
-         translucent={true}
-      />
-      {/* Blue background for status bar area */}
-      <View style={{
-         position: 'absolute',
-         top: 0,
-         left: 0,
-         right: 0,
-         height: statusBarHeight,
-         backgroundColor: '#007BFF',
-         zIndex: 1,
-      }} />
-      <View style={[styles.headerContainer, { paddingTop: statusBarHeight }]}>
-         <View style={styles.contentContainer}>
+         <StatusBar
+            backgroundColor="#007BFF"
+            barStyle="light-content"
+            translucent={true}
+         />
+         {/* Blue background for status bar area */}
+         <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: statusBarHeight,
+            backgroundColor: '#007BFF',
+            zIndex: 1,
+         }} />
+         <View style={[styles.headerContainer, { paddingTop: statusBarHeight }]}>
+            <View style={styles.contentContainer}>
                <View style={styles.logoContainer}>
                   <Image
                      source={{ uri: 'https://i.pinimg.com/originals/92/4c/af/924cafad941065f4d5c03ca5423bfcd3.gif' }}
@@ -80,6 +103,13 @@ const Header = () => {
                      style={styles.locationContainer}
                      onPress={() => navigation.navigate('LocationPicker')}
                   >
+                     {/* Down arrow icon before address */}
+                     <Ionicons
+                        name="chevron-down-outline"
+                        size={14}
+                        color="#007BFF"
+                        style={{ marginRight: 4, alignSelf: 'center' }}
+                     />
                      <Text
                         style={styles.addressText}
                         numberOfLines={1}
@@ -102,7 +132,7 @@ const Header = () => {
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
+   headerContainer: {
       backgroundColor: 'transparent',
       height: Platform.select({
          ios: normalizeVertical(70),
@@ -166,7 +196,7 @@ const styles = StyleSheet.create({
    addressText: {
       color: '#007BFF',
       fontSize: normalize(12),
-      maxWidth: width * 0.5,
+      maxWidth: width * 0.3,
       includeFontPadding: false,
    },
    locationIcon: {
