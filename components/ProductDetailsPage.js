@@ -316,7 +316,7 @@ const ProductDetails = () => {
                     <View style={{ alignItems: 'flex-end', marginTop: 8, marginRight: 16 }}>
                         <TouchableOpacity onPress={() => setShowReportModal(true)}>
                             <Text style={{ color: '#e74c3c', fontWeight: '600', textDecorationLine: 'underline', fontSize: 14 }}>
-                                Report this post
+                                Report this post:
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -346,34 +346,34 @@ const ProductDetails = () => {
                         </View>
                     </View>
 
-                    {/* Chat/Call Buttons */}
-                    {buyerId !== product.user?.id && (
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.chatButton]}
-                                onPress={handleChatWithSeller}
-                            >
-                                <Icon name="message-text" size={20} color="#fff" />
-                                <Text style={styles.buttonText}>Chat with Seller</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.callButton]}
-                                onPress={() => Linking.openURL(`tel:${product.phone}`)}
-                            >
-                                <Icon name="phone" size={20} color="#fff" />
-                                <Text style={styles.buttonText}>Call Now</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                    <ReportPostModal
+                        visible={showReportModal}
+                        onClose={() => setShowReportModal(false)}
+                        postId={product.id}
+                    />
                 </ScrollView>
 
-                <ReportPostModal
-                    visible={showReportModal}
-                    onClose={() => setShowReportModal(false)}
-                    postId={product.id}
-                />
-                <BottomNavBar />
+                {/* Chat/Call Buttons */}
+                {buyerId !== product.user?.id && (
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.chatButton]}
+                            onPress={handleChatWithSeller}
+                        >
+                            <Icon name="message-text" size={20} color="#fff" />
+                            <Text style={styles.buttonText}>Chat with Seller</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.callButton]}
+                            onPress={() => Linking.openURL(`tel:${product.phone}`)}
+                        >
+                            <Icon name="phone" size={20} color="#fff" />
+                            <Text style={styles.buttonText}>Call Now</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {/* <BottomNavBar /> */}
             </View>
         </>
     );

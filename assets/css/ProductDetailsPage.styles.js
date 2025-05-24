@@ -1,6 +1,10 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+// Responsive scaling functions
+const scale = size => width / 360 * size; // 360 is standard mobile screen width
+const verticalScale = size => height / 640 * size; // 640 is standard mobile screen height
 
 const styles = StyleSheet.create({
     container: {
@@ -8,42 +12,60 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     scrollContainer: {
-        paddingBottom: 10,
+        paddingBottom: verticalScale(80), // Adjusted for button height
     },
     imageGallery: {
-        height: width * 0.8,
+        height: width * 0.6, // 60% of screen width
     },
     galleryImage: {
         width: width,
-        height: width * 0.8,
+        height: width * 0.6,
         resizeMode: 'cover',
     },
     detailsSection: {
         backgroundColor: '#ffffff',
-        marginHorizontal: 16,
-        marginVertical: 8,
+        marginHorizontal: scale(16),
+        marginVertical: verticalScale(8),
     },
     mapContainer: {
-        height: 180,
-        marginHorizontal: 16,
-        marginVertical: 8,
+        height: verticalScale(180),
+        marginHorizontal: scale(16),
+        marginVertical: verticalScale(8),
     },
     map: {
         ...StyleSheet.absoluteFillObject,
     },
     buttonContainer: {
         flexDirection: 'row',
-        gap: 12,
-        marginHorizontal: 16,
-        marginVertical: 16,
+        gap: scale(8),
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingHorizontal: scale(16),
+        paddingVertical: verticalScale(10),
+        backgroundColor: '#ffffff',
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -verticalScale(2) },
+        shadowOpacity: 0.1,
+        shadowRadius: scale(4),
+        elevation: 8,
     },
     actionButton: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 14,
-        borderRadius: 8,
+        paddingVertical: verticalScale(10),
+        borderRadius: scale(6),
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: scale(14),
+        fontWeight: '600',
+        marginLeft: scale(6),
     },
     chatButton: {
         backgroundColor: '#007bff',
@@ -51,38 +73,7 @@ const styles = StyleSheet.create({
     callButton: {
         backgroundColor: '#27ae60',
     },
-    buttonText: {
-        color: '#fff',
-        fontSize: 15,
-        fontWeight: '600',
-        marginLeft: 8,
-    },
-    addressContainer: {
-        marginVertical: 8,
-    },
-    addressHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    addressTitle: {
-        fontSize: 15,
-        fontWeight: '600',
-        marginLeft: 8,
-        color: '#1a1a1a',
-    },
-    addressText: {
-        fontSize: 14,
-        color: '#444',
-        lineHeight: 20,
-    },
-    viewMapText: {
-        color: '#007bff',
-        fontSize: 14,
-        fontWeight: '500',
-        marginTop: 6,
-    },
-    // For loading states
+    // Loading states
     loaderContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -90,62 +81,62 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     loadingText: {
-        marginTop: 12,
-        fontSize: 14,
+        marginTop: verticalScale(12),
+        fontSize: scale(14),
         color: '#666',
     },
-    // Product-specific details
+    // Product details
     priceText: {
-        fontSize: 22,
+        fontSize: scale(22),
         fontWeight: '700',
         color: '#2ecc71',
-        marginVertical: 8,
+        marginVertical: verticalScale(8),
     },
     titleText: {
-        fontSize: 20,
+        fontSize: scale(20),
         fontWeight: '600',
         color: '#1a1a1a',
-        marginVertical: 8,
+        marginVertical: verticalScale(8),
     },
     descriptionText: {
-        fontSize: 15,
+        fontSize: scale(15),
         color: '#444',
-        lineHeight: 22,
-        marginVertical: 8,
+        lineHeight: scale(22),
+        marginVertical: verticalScale(8),
     },
     specContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginVertical: 4,
+        marginVertical: verticalScale(4),
     },
     specLabel: {
-        fontSize: 14,
+        fontSize: scale(14),
         color: '#666',
         flex: 1,
     },
     specValue: {
-        fontSize: 14,
+        fontSize: scale(14),
         color: '#1a1a1a',
         flex: 1,
         textAlign: 'right',
     },
     sectionContainer: {
-        marginHorizontal: 16,
-        marginVertical: 12,
-        padding: 16,
+        marginHorizontal: scale(16),
+        marginVertical: verticalScale(12),
+        padding: scale(16),
         backgroundColor: '#ffffff',
-        borderRadius: 8,
+        borderRadius: scale(8),
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: verticalScale(2) },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowRadius: scale(4),
         elevation: 2,
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: scale(18),
         fontWeight: 'bold',
         color: '#1a1a1a',
-        marginBottom: 12,
+        marginBottom: verticalScale(12),
     },
     sellerCard: {
         flexDirection: 'row',
@@ -156,73 +147,67 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     sellerImage: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        marginRight: 12,
+        width: scale(48),
+        height: scale(48),
+        borderRadius: scale(24),
+        marginRight: scale(12),
     },
     sellerInfo: {
         flex: 1,
     },
     sellerName: {
-        fontSize: 16,
+        fontSize: scale(16),
         fontWeight: '600',
         color: '#1a1a1a',
     },
     postedText: {
-        fontSize: 12,
+        fontSize: scale(12),
         color: '#666',
-        marginTop: 2,
+        marginTop: verticalScale(2),
     },
     followButton: {
-        padding: 8,
-    },
-    locationCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        padding: scale(8),
     },
     addressContainer: {
-        marginHorizontal: 16,
-        marginVertical: 8,
-        width: '100%', // Ensure the container takes full width
+        marginHorizontal: scale(16),
+        marginVertical: verticalScale(8),
+        width: '100%',
     },
     addressRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 8,
-        flexWrap: 'nowrap', // Prevent wrapping
-    },
-    mapIcon: {
-        marginLeft: 8, // Adjust spacing for better alignment
-    },
-    addressHeader: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        marginRight: 5,
-    },
-    addressText: {
-        fontSize: 15,
-        color: '#444',
-        marginRight: 8,
-        flexShrink: 1, // Shrinks the text if space is limited
+        paddingVertical: verticalScale(8),
     },
     mapAddressOverlay: {
         position: 'absolute',
-        top: 12,
-        left: 12,
+        top: verticalScale(12),
+        left: scale(12),
         backgroundColor: 'rgba(255,255,255,0.92)',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 8,
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(6),
+        borderRadius: scale(8),
         maxWidth: '80%',
         zIndex: 10,
     },
     mapAddressText: {
         color: '#222',
-        fontSize: 13,
+        fontSize: scale(13),
         fontWeight: '500',
     },
+    // Add platform-specific styles where needed
+    ...Platform.select({
+        ios: {
+            safeArea: {
+                flex: 1,
+                backgroundColor: '#007BFF',
+            },
+        },
+        android: {
+            safeArea: {
+                flex: 1,
+            },
+        },
+    }),
 });
 
 export default styles;
