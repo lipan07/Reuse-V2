@@ -41,7 +41,6 @@ const Home = () => {
 
   const handleUserIconClick = () => {
 
-    // navigation.navigate('Profile');
     navigation.navigate('Login');
   };
 
