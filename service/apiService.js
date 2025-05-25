@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
 
 export const submitForm = async (formData, subcategory) => {
     const token = await AsyncStorage.getItem('authToken');
@@ -72,33 +71,36 @@ export const submitForm = async (formData, subcategory) => {
         });
 
         if (response.ok) {
-            Dialog.show({
-                type: ALERT_TYPE.SUCCESS,
-                title: 'Success',
-                textBody: isUpdate
-                    ? 'Post updated successfully!'
-                    : 'Post created successfully!',
-                button: 'close',
-            });
-            // return { success: true, data: responseData };
+            return {
+                success: true,
+                alert: {
+                    type: 'success',
+                    title: 'Success',
+                    message: isUpdate ? 'Post updated successfully!' : 'Post created successfully!'
+                },
+                data: responseData
+            };
         } else {
-            Dialog.show({
-                type: ALERT_TYPE.WARNING,
-                title: 'Validation Error',
-                textBody: responseData.message || 'Something went wrong!',
-                button: 'close',
-            });
-            // return { success: false, errors: responseData.errors };
+            return {
+                success: false,
+                alert: {
+                    type: 'warning',
+                    title: 'Validation Error',
+                    message: responseData.message || 'Something went wrong!'
+                },
+                errors: responseData.errors
+            };
         }
-        return responseData;
     } catch (error) {
         console.error('API Error:', error);
-        Dialog.show({
-            type: ALERT_TYPE.DANGER,
-            title: 'Network Error',
-            textBody: 'Failed to connect to the server',
-            button: 'close',
-        });
-        return { success: false, error: error.message };
+        return {
+            success: false,
+            alert: {
+                type: 'error',
+                title: 'Network Error',
+                message: 'Failed to connect to the server'
+            },
+            error: error.message
+        };
     }
 };
