@@ -15,11 +15,11 @@ const styles = StyleSheet.create({
         paddingBottom: verticalScale(80), // Adjusted for button height
     },
     imageGallery: {
-        height: width * 0.6, // 60% of screen width
+        height: width * 0.9, // 60% of screen width
     },
     galleryImage: {
         width: width,
-        height: width * 0.6,
+        height: width * 0.9,
         resizeMode: 'cover',
     },
     detailsSection: {

@@ -35,7 +35,7 @@ import Scooter from './ProductDetails/Scooter';
 import ToursTravel from './ProductDetails/ToursTravel';
 import VehicleSparePart from './ProductDetails/VehicleSparePart';
 import Others from './ProductDetails/Others';
-import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import { Dialog, ALERT_TYPE, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import styles from '../assets/css/ProductDetailsPage.styles';
 import AddressSection from './AddressSection.js';
 import ReportPostModal from './ReportPostModal.js';
@@ -197,6 +197,62 @@ const ProductDetails = () => {
         Linking.openURL(url).catch(() => Alert.alert("Error", "Could not open Google Maps"));
     };
 
+    // Add this function in your ProductDetails component
+    const handleReportSubmit = async (reportData) => {
+        try {
+            const token = await AsyncStorage.getItem('authToken');
+            const url = `${process.env.BASE_URL}/reports`;
+
+            console.log('Submitting report to:', url); // Debug URL
+            const formData = new FormData();
+
+            // Append all required fields matching your StoreReportRequest validation
+            formData.append('post_id', product.id);
+            formData.append('reporting_user_id', buyerId);
+            formData.append('type', reportData.reason); // Must match enum values exactly
+            if (reportData.description) {
+                formData.append('description', reportData.description);
+            }
+            console.log(formData);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            // First check if response is OK
+            if (!response.ok) {
+                const text = await response.text();
+                console.error('Server response:', text);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // If response is OK, then parse as JSON
+            const result = await response.json();
+
+            Toast.show({
+                type: ALERT_TYPE.SUCCESS,
+                title: 'Report Submitted',
+                textBody: 'Your report has been successfully submitted',
+                autoClose: 2000
+            });
+            setShowReportModal(false);
+
+        } catch (error) {
+            console.error('Full error details:', error);
+            Dialog.show({
+                type: ALERT_TYPE.DANGER,
+                title: 'Submission Failed',
+                textBody: error.message || 'Failed to submit report. Please try again.',
+                button: 'OK',
+            });
+        }
+    };
+
     const renderDetails = () => {
         switch (product.category_id) {
             case 1: return <Car product={product} />
@@ -236,145 +292,152 @@ const ProductDetails = () => {
 
     return (
         <>
-            <StatusBar backgroundColor="#007BFF" barStyle="light-content" translucent={true} />
-            {/* Blue background for status bar area */}
-            <View style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: statusBarHeight,
-                backgroundColor: '#007BFF',
-                zIndex: 1,
-            }} />
-            <View style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    {/* ✅ Auto-scrolling Image Gallery */}
-                    <ScrollView
-                        ref={scrollViewRef}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        style={styles.imageGallery}
-                        onMomentumScrollEnd={(e) => {
-                            const index = Math.round(e.nativeEvent.contentOffset.x / width);
-                            setCurrentImageIndex(index);
-                        }}
-                    >
-                        {product.images?.map((img, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => navigation.navigate('ImageViewer', {
-                                    images: product.images,
-                                    selectedIndex: index
-                                })}
-                            >
-                                <Image
-                                    source={{ uri: img }}
-                                    style={styles.galleryImage}
-                                />
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-
-                    {/* Product Details Section */}
-                    <View style={styles.detailsSection}>{renderDetails()}</View>
-
-                    {/* Seller Information */}
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Seller Information</Text>
-                        <View style={styles.sellerCard}>
-                            <View style={styles.sellerHeader}>
-                                <Image
-                                    source={product.user?.profile_image
-                                        ? { uri: product.user.profile_image }
-                                        : require('../assets/images/user.webp')}
-                                    style={styles.sellerImage}
-                                />
-                                <View style={styles.sellerInfo}>
-                                    <Text style={styles.sellerName}>
-                                        {product.user?.name || 'Unknown Seller'}
-                                    </Text>
-                                    <Text style={styles.postedText}>Posted 2 days ago</Text>
-                                </View>
-                                <TouchableOpacity
-                                    onPress={toggleFollow}
-                                    style={styles.followButton}
-                                >
-                                    <Icon
-                                        name={isFollowed ? 'heart' : 'heart-outline'}
-                                        size={28}
-                                        color={isFollowed ? '#e74c3c' : '#7f8c8d'}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-
-
-                    {/* Report Link */}
-                    <View style={{ alignItems: 'flex-end', marginTop: 8, marginRight: 16 }}>
-                        <TouchableOpacity onPress={() => setShowReportModal(true)}>
-                            <Text style={{ color: '#e74c3c', fontWeight: '600', textDecorationLine: 'underline', fontSize: 14 }}>
-                                Report this post:
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Map with Address Overlay */}
-                    <View style={styles.mapContainer}>
-                        <MapView
-                            style={styles.map}
-                            onPress={handleMapPress}
-                            initialRegion={{
-                                latitude: 22.6992,
-                                longitude: 88.3902,
-                                latitudeDelta: 0.0922,
-                                longitudeDelta: 0.0421,
+            <AlertNotificationRoot>
+                <StatusBar backgroundColor="#007BFF" barStyle="light-content" translucent={true} />
+                {/* Blue background for status bar area */}
+                <View style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: statusBarHeight,
+                    backgroundColor: '#007BFF',
+                    zIndex: 1,
+                }} />
+                <View style={styles.container}>
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                        {/* ✅ Auto-scrolling Image Gallery */}
+                        <ScrollView
+                            ref={scrollViewRef}
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            style={styles.imageGallery}
+                            onMomentumScrollEnd={(e) => {
+                                const index = Math.round(e.nativeEvent.contentOffset.x / width);
+                                setCurrentImageIndex(index);
                             }}
                         >
-                            <Marker
-                                coordinate={{ latitude: 22.6992, longitude: 88.3902 }}
-                                title="Product Location"
-                            />
-                        </MapView>
-                        {/* Address overlay at top left */}
-                        <View style={styles.mapAddressOverlay}>
-                            <Text style={styles.mapAddressText} numberOfLines={2} ellipsizeMode="tail">
-                                {'Agarpara, Kolkata-700109' || product.address}
-                            </Text>
+                            {product.images?.map((img, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    onPress={() => navigation.navigate('ImageViewer', {
+                                        images: product.images,
+                                        selectedIndex: index
+                                    })}
+                                >
+                                    <Image
+                                        source={{ uri: img }}
+                                        style={styles.galleryImage}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+
+                        {/* Product Details Section */}
+                        <View style={styles.detailsSection}>{renderDetails()}</View>
+
+                        {/* Seller Information */}
+                        <View style={styles.sectionContainer}>
+                            <Text style={styles.sectionTitle}>Seller Information</Text>
+                            <View style={styles.sellerCard}>
+                                <View style={styles.sellerHeader}>
+                                    <Image
+                                        source={product.user?.profile_image
+                                            ? { uri: product.user.profile_image }
+                                            : require('../assets/images/user.webp')}
+                                        style={styles.sellerImage}
+                                    />
+                                    <View style={styles.sellerInfo}>
+                                        <Text style={styles.sellerName}>
+                                            {product.user?.name || 'Unknown Seller'}
+                                        </Text>
+                                        <Text style={styles.postedText}>Posted 2 days ago</Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={toggleFollow}
+                                        style={styles.followButton}
+                                    >
+                                        <Icon
+                                            name={isFollowed ? 'heart' : 'heart-outline'}
+                                            size={28}
+                                            color={isFollowed ? '#e74c3c' : '#7f8c8d'}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
-                    </View>
 
-                    <ReportPostModal
-                        visible={showReportModal}
-                        onClose={() => setShowReportModal(false)}
-                        postId={product.id}
-                    />
-                </ScrollView>
 
-                {/* Chat/Call Buttons */}
-                {buyerId !== product.user?.id && (
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={[styles.actionButton, styles.chatButton]}
-                            onPress={handleChatWithSeller}
-                        >
-                            <Icon name="message-text" size={20} color="#fff" />
-                            <Text style={styles.buttonText}>Chat with Seller</Text>
-                        </TouchableOpacity>
+                        {/* Report Link */}
+                        {buyerId !== product.user?.id && (
+                            <>
+                                <View style={{ alignItems: 'flex-end', marginTop: 8, marginRight: 16 }}>
+                                    <TouchableOpacity onPress={() => setShowReportModal(true)}>
+                                        <Text style={{ color: '#e74c3c', fontWeight: '600', textDecorationLine: 'underline', fontSize: 14 }}>
+                                            Report this post:
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
 
-                        <TouchableOpacity
-                            style={[styles.actionButton, styles.callButton]}
-                            onPress={() => Linking.openURL(`tel:${product.phone}`)}
-                        >
-                            <Icon name="phone" size={20} color="#fff" />
-                            <Text style={styles.buttonText}>Call Now</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {/* <BottomNavBar /> */}
-            </View>
+                                <ReportPostModal
+                                    visible={showReportModal}
+                                    onClose={() => setShowReportModal(false)}
+                                    onSubmit={handleReportSubmit}
+                                    postId={product.id}
+                                />
+                            </>
+                        )}
+
+                        {/* Map with Address Overlay */}
+                        <View style={styles.mapContainer}>
+                            <MapView
+                                style={styles.map}
+                                onPress={handleMapPress}
+                                initialRegion={{
+                                    latitude: 22.6992,
+                                    longitude: 88.3902,
+                                    latitudeDelta: 0.0922,
+                                    longitudeDelta: 0.0421,
+                                }}
+                            >
+                                <Marker
+                                    coordinate={{ latitude: 22.6992, longitude: 88.3902 }}
+                                    title="Product Location"
+                                />
+                            </MapView>
+                            {/* Address overlay at top left */}
+                            <View style={styles.mapAddressOverlay}>
+                                <Text style={styles.mapAddressText} numberOfLines={2} ellipsizeMode="tail">
+                                    {'Agarpara, Kolkata-700109' || product.address}
+                                </Text>
+                            </View>
+                        </View>
+                    </ScrollView>
+
+                    {/* Chat/Call Buttons */}
+                    {buyerId !== product.user?.id && (
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                style={[styles.actionButton, styles.chatButton]}
+                                onPress={handleChatWithSeller}
+                            >
+                                <Icon name="message-text" size={20} color="#fff" />
+                                <Text style={styles.buttonText}>Chat with Seller</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.actionButton, styles.callButton]}
+                                onPress={() => Linking.openURL(`tel:${product.phone}`)}
+                            >
+                                <Icon name="phone" size={20} color="#fff" />
+                                <Text style={styles.buttonText}>Call Now</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    {/* <BottomNavBar /> */}
+                </View>
+            </AlertNotificationRoot>
         </>
     );
 };
