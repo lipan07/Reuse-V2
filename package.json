@@ -29,6 +29,7 @@
     "react-native-google-mobile-ads": "^15.1.0",
     "react-native-image-picker": "^8.2.0",
     "react-native-maps": "^1.22.1",
+    "react-native-modal": "^14.0.0-rc.1",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0",
     "react-native-swiper": "^1.6.0",

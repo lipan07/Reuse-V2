@@ -10,17 +10,22 @@ import {
     ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import ModalScreen from './SupportElement/ModalScreen';
 
 const { width } = Dimensions.get('window');
 
 const ReportPostModal = ({ visible, onClose, onSubmit, postId }) => {
-    const [reason, setReason] = useState('Spam');
+    const [reason, setReason] = useState('spam');
     const [description, setDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertType, setAlertType] = useState('warning');
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
+
     const reasons = [
-        { label: 'Spam', value: 'Spam', icon: 'alert-octagon' },
+        { label: 'Spam', value: 'spam', icon: 'alert-octagon' },
         { label: 'Inappropriate', value: 'inappropriate', icon: 'account-off' },
         { label: 'False Info', value: 'false_info', icon: 'cancel' },
         { label: 'Other', value: 'other', icon: 'dots-horizontal' },
@@ -28,12 +33,11 @@ const ReportPostModal = ({ visible, onClose, onSubmit, postId }) => {
 
     const handleSubmit = async () => {
         if (!description.trim()) {
-            Dialog.show({
-                type: ALERT_TYPE.WARNING,
-                title: 'Missing Information',
-                textBody: 'Please provide a description for your report',
-                button: 'OK',
-            });
+            // Replace Dialog with ModalScreen state
+            setAlertType('warning');
+            setAlertTitle('Missing Information');
+            setAlertMessage('Please provide a description for your report');
+            setAlertVisible(true);
             return;
         }
 
@@ -46,93 +50,103 @@ const ReportPostModal = ({ visible, onClose, onSubmit, postId }) => {
         } finally {
             setIsSubmitting(false);
         }
+
     };
 
     return (
-        <Modal
-            visible={visible}
-            animationType="fade"
-            transparent
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Icon name="close" size={24} color="#666" />
-                    </TouchableOpacity>
+        <>
+            <ModalScreen
+                visible={alertVisible}
+                type={alertType}
+                title={alertTitle}
+                message={alertMessage}
+                onClose={() => setAlertVisible(false)}
+            />
+            <Modal
+                visible={visible}
+                animationType="fade"
+                transparent
+                onRequestClose={onClose}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                            <Icon name="close" size={24} color="#666" />
+                        </TouchableOpacity>
 
-                    <Text style={styles.modalTitle}>Report This Post</Text>
+                        <Text style={styles.modalTitle}>Report This Post</Text>
 
-                    <Text style={styles.subTitle}>Why are you reporting this post?</Text>
+                        <Text style={styles.subTitle}>Why are you reporting this post?</Text>
 
-                    <View style={styles.reasonContainer}>
-                        {reasons.map(({ label, value, icon }) => (
+                        <View style={styles.reasonContainer}>
+                            {reasons.map(({ label, value, icon }) => (
+                                <TouchableOpacity
+                                    key={value}
+                                    style={[
+                                        styles.reasonButton,
+                                        reason === value && styles.selectedReason
+                                    ]}
+                                    onPress={() => setReason(value)}
+                                >
+                                    <Icon
+                                        name={icon}
+                                        size={20}
+                                        color={reason === value ? '#fff' : '#007bff'}
+                                    />
+                                    <Text style={[
+                                        styles.reasonText,
+                                        reason === value && styles.selectedReasonText
+                                    ]}>
+                                        {label}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                placeholder="Please describe the issue..."
+                                placeholderTextColor="#999"
+                                value={description}
+                                onChangeText={setDescription}
+                                multiline
+                                numberOfLines={4}
+                                style={styles.input}
+                                textAlignVertical="top"
+                                maxLength={500}
+                            />
+                            <Text style={styles.charCount}>
+                                {description.length}/500
+                            </Text>
+                        </View>
+
+                        <View style={styles.buttonContainer}>
                             <TouchableOpacity
-                                key={value}
-                                style={[
-                                    styles.reasonButton,
-                                    reason === value && styles.selectedReason
-                                ]}
-                                onPress={() => setReason(value)}
+                                style={styles.cancelButton}
+                                onPress={onClose}
+                                disabled={isSubmitting}
                             >
-                                <Icon
-                                    name={icon}
-                                    size={20}
-                                    color={reason === value ? '#fff' : '#007bff'}
-                                />
-                                <Text style={[
-                                    styles.reasonText,
-                                    reason === value && styles.selectedReasonText
-                                ]}>
-                                    {label}
-                                </Text>
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
                             </TouchableOpacity>
-                        ))}
-                    </View>
 
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            placeholder="Please describe the issue..."
-                            placeholderTextColor="#999"
-                            value={description}
-                            onChangeText={setDescription}
-                            multiline
-                            numberOfLines={4}
-                            style={styles.input}
-                            textAlignVertical="top"
-                            maxLength={500}
-                        />
-                        <Text style={styles.charCount}>
-                            {description.length}/500
-                        </Text>
-                    </View>
-
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={styles.cancelButton}
-                            onPress={onClose}
-                            disabled={isSubmitting}
-                        >
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.submitButton}
-                            onPress={handleSubmit}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <Text style={styles.submitButtonText}>
-                                    Submit Report
-                                </Text>
-                            )}
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.submitButton}
+                                onPress={handleSubmit}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={styles.submitButtonText}>
+                                        Submit Report
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
-        </Modal>
+            </Modal>
+        </>
     );
 };
 
