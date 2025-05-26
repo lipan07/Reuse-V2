@@ -30,6 +30,7 @@ const AddOthers = ({ route, navigation }) => {
     deletedImages: [],
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState('info');
