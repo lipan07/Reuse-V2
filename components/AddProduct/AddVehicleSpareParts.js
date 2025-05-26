@@ -15,6 +15,7 @@ import ImagePickerComponent from './SubComponent/ImagePickerComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddressAutocomplete from '../AddressAutocomplete'; // Add this import
 import styles from '../../assets/css/AddProductForm.styles.js';
+import ModalScreen from '../SupportElement/ModalScreen.js';
 
 const AddVehicleSpareParts = ({ route, navigation }) => {
   const { category, subcategory, product } = route.params;
@@ -30,6 +31,11 @@ const AddVehicleSpareParts = ({ route, navigation }) => {
     deletedImages: [],
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalType, setModalType] = useState('info');
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -77,12 +83,22 @@ const AddVehicleSpareParts = ({ route, navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (isLoading) return;
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       const response = await submitForm(formData, subcategory);
-      if (response.success) navigation.goBack();
+
+      setModalType(response.alert.type);
+      setModalTitle(response.alert.title);
+      setModalMessage(response.alert.message);
+      setIsModalVisible(true);
+
+      setIsSubmitting(false);
     } catch (error) {
       console.error('Submission error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -105,7 +121,7 @@ const AddVehicleSpareParts = ({ route, navigation }) => {
   }
 
   return (
-    <AlertNotificationRoot>
+    <>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -188,7 +204,17 @@ const AddVehicleSpareParts = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </AlertNotificationRoot>
+      <ModalScreen
+        visible={isModalVisible}
+        type={modalType}
+        title={modalTitle}
+        message={modalMessage}
+        onClose={() => {
+          setIsModalVisible(false);
+          if (modalType === 'success') navigation.goBack();
+        }}
+      />
+    </>
   );
 };
 

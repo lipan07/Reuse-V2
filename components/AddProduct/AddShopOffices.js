@@ -6,6 +6,7 @@ import ImagePickerComponent from './SubComponent/ImagePickerComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddressAutocomplete from '../AddressAutocomplete';
 import styles from '../../assets/css/AddProductForm.styles.js';
+import ModalScreen from '../SupportElement/ModalScreen.js';
 
 const AddShopOffices = ({ route, navigation }) => {
     const { category, subcategory, product } = route.params;
@@ -30,6 +31,11 @@ const AddShopOffices = ({ route, navigation }) => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(!!product);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [modalType, setModalType] = useState('info');
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalMessage, setModalMessage] = useState('');
 
     // Fetch product details if editing
     useEffect(() => {
@@ -111,7 +117,13 @@ const AddShopOffices = ({ route, navigation }) => {
 
         try {
             const response = await submitForm(formData, subcategory);
-            if (response.success) navigation.goBack();
+
+            setModalType(response.alert.type);
+            setModalTitle(response.alert.title);
+            setModalMessage(response.alert.message);
+            setIsModalVisible(true);
+
+            setIsSubmitting(false);
         } catch (error) {
             console.error('Submission error:', error);
         } finally {
@@ -129,7 +141,7 @@ const AddShopOffices = ({ route, navigation }) => {
     }
 
     return (
-        <AlertNotificationRoot>
+        <>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
@@ -290,7 +302,17 @@ const AddShopOffices = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
-        </AlertNotificationRoot>
+            <ModalScreen
+                visible={isModalVisible}
+                type={modalType}
+                title={modalTitle}
+                message={modalMessage}
+                onClose={() => {
+                    setIsModalVisible(false);
+                    if (modalType === 'success') navigation.goBack();
+                }}
+            />
+        </>
     );
 };
 

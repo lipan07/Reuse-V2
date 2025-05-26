@@ -101,6 +101,7 @@ const AddCarForm = ({ route, navigation }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(!!product);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState('info');
   const [modalTitle, setModalTitle] = useState('');
