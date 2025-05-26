@@ -3,7 +3,6 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingVi
 import { Picker } from '@react-native-picker/picker';
 import { submitForm } from '../../service/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AlertNotificationRoot } from 'react-native-alert-notification';
 import ImagePickerComponent from './SubComponent/ImagePickerComponent';
 import AddressAutocomplete from '../AddressAutocomplete';
 import CustomPicker from './SubComponent/CustomPicker';

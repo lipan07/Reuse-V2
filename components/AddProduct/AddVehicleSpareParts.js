@@ -10,7 +10,6 @@ import {
   Platform,
 } from 'react-native';
 import { submitForm } from '../../service/apiService';
-import { AlertNotificationRoot } from 'react-native-alert-notification';
 import ImagePickerComponent from './SubComponent/ImagePickerComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddressAutocomplete from '../AddressAutocomplete'; // Add this import
