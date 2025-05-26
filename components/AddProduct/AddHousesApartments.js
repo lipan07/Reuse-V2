@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { submitForm } from '../../service/apiService';
-import { AlertNotificationRoot } from 'react-native-alert-notification';
 import ImagePickerComponent from './SubComponent/ImagePickerComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddressAutocomplete from '../AddressAutocomplete';
 import styles from '../../assets/css/AddProductForm.styles.js';
+import ModalScreen from '../SupportElement/ModalScreen';
 
 const AddHousesApartments = ({ route, navigation }) => {
   const { category, subcategory, product } = route.params;
@@ -35,6 +35,18 @@ const AddHousesApartments = ({ route, navigation }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(!!product);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalType, setModalType] = useState('info');
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalData, setModalData] = useState({
+    type: 'error',
+    title: 'Error',
+    message: 'Something went wrong.',
+  });
 
   // Fetch product details if editing
   useEffect(() => {
@@ -121,7 +133,13 @@ const AddHousesApartments = ({ route, navigation }) => {
 
     try {
       const response = await submitForm(formData, subcategory);
-      if (response.success) navigation.goBack();
+
+      setModalType(response.alert.type);
+      setModalTitle(response.alert.title);
+      setModalMessage(response.alert.message);
+      setIsModalVisible(true);
+
+      setIsSubmitting(false);
     } catch (error) {
       console.error('Submission error:', error);
     } finally {
@@ -138,8 +156,16 @@ const AddHousesApartments = ({ route, navigation }) => {
     );
   }
 
+  const handleOptionSelection = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+
   return (
-    <AlertNotificationRoot>
+    <>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -353,7 +379,19 @@ const AddHousesApartments = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </AlertNotificationRoot>
+
+      <ModalScreen
+        visible={isModalVisible}
+        type={modalType}
+        title={modalTitle}
+        message={modalMessage}
+        onClose={() => {
+          setIsModalVisible(false);
+          if (modalType === 'success') navigation.goBack();
+        }}
+      />
+
+    </>
   );
 };
 
