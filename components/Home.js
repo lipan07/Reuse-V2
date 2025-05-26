@@ -280,11 +280,26 @@ const Home = () => {
       onPress={() => navigation.navigate('ProductDetails', { productDetails: item })}
     >
       <View style={styles.imageContainer}>
-        <Swiper style={styles.swiper} showsPagination autoplay autoplayTimeout={3}>
-          {item.images.map((imageUri, index) => (
-            <Image key={index} source={{ uri: imageUri }} style={styles.productImage} />
-          ))}
+
+        <Swiper style={styles.swiper} showsPagination={false} autoplay autoplayTimeout={3}>
+          {item.images && item.images.length > 0 ? (
+            item.images.map((imageUri, index) => (
+              <Image
+                key={index}
+                source={{ uri: imageUri }}
+                style={styles.productImage}
+                onError={() => console.warn('Failed to load image:', imageUri)}
+              />
+            ))
+          ) : (
+            <View style={styles.placeholderContainer}>
+              <Text style={styles.placeholderText}>
+                {item.category?.name || 'No image available'}
+              </Text>
+            </View>
+          )}
         </Swiper>
+
       </View>
       <Text style={styles.productName}>{item.title}</Text>
       <Text style={styles.details} numberOfLines={2} ellipsizeMode="tail">
@@ -524,6 +539,36 @@ const styles = StyleSheet.create({
     marginVertical: normalizeVertical(12),
     marginHorizontal: normalize(12),
   },
+  noImageContainer: {
+    width: '100%',
+    height: normalizeVertical(90),
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e6e6e6',
+    borderRadius: normalize(4),
+    marginBottom: normalize(6),
+  },
+  noImageText: {
+    color: '#777',
+    fontSize: normalize(12),
+    textAlign: 'center',
+    paddingHorizontal: normalize(4),
+  },
+  placeholderContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e0e0e0',
+  },
+
+  placeholderText: {
+    fontSize: normalize(12),
+    color: '#555',
+    textAlign: 'center',
+    paddingHorizontal: normalize(10),
+  },
+
 });
 
 export default Home;

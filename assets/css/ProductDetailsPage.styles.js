@@ -208,6 +208,20 @@ const styles = StyleSheet.create({
             },
         },
     }),
+    noImageContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0',
+        borderRadius: 8,
+    },
+
+    noImageText: {
+        color: '#7f8c8d',
+        fontSize: 16,
+        textAlign: 'center',
+        paddingHorizontal: 16,
+    },
+
 });
 
 export default styles;

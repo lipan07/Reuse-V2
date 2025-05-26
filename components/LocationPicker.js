@@ -193,7 +193,10 @@ const styles = StyleSheet.create({
     map: { flex: 1 },
     searchContainer: {
         position: 'absolute',
-        top: Platform.select({ ios: normalizeVertical(40), android: normalizeVertical(30) }),
+        top: Platform.select({
+            ios: normalizeVertical(60), // increased from 40
+            android: (StatusBar.currentHeight || 24) + normalizeVertical(20), // dynamic based on status bar
+        }),
         width: '92%',
         alignSelf: 'center',
         backgroundColor: 'white',
@@ -203,7 +206,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15,
         shadowRadius: 3,
         elevation: 3,
+        zIndex: 10,
     },
+
     searchInput: {
         padding: normalize(14),
         fontSize: normalize(12),

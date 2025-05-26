@@ -224,21 +224,21 @@ const ProductDetails = () => {
 
             const result = await response.json();
 
-           if (response.ok) {
-            setShowReportModal(false);
-            setModalType('success');
-            setModalTitle('Report Submitted');
-            setModalMessage(result.message || 'Your report has been successfully submitted.');
+            if (response.ok) {
+                setShowReportModal(false);
+                setModalType('success');
+                setModalTitle('Report Submitted');
+                setModalMessage(result.message || 'Your report has been successfully submitted.');
+                setModalVisible(true);
+            } else {
+                throw new Error(result.message || 'Failed to submit report');
+            }
+        } catch (error) {
+            setModalType('error'); // Changed from 'danger' to match your ModalScreen types
+            setModalTitle('Submission Failed');
+            setModalMessage(error.message || 'Something went wrong while submitting your report.');
             setModalVisible(true);
-        } else {
-            throw new Error(result.message || 'Failed to submit report');
         }
-    } catch (error) {
-        setModalType('error'); // Changed from 'danger' to match your ModalScreen types
-        setModalTitle('Submission Failed');
-        setModalMessage(error.message || 'Something went wrong while submitting your report.');
-        setModalVisible(true);
-    }
     };
 
 
@@ -295,32 +295,43 @@ const ProductDetails = () => {
             <View style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     {/* ✅ Auto-scrolling Image Gallery */}
-                    <ScrollView
-                        ref={scrollViewRef}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        style={styles.imageGallery}
-                        onMomentumScrollEnd={(e) => {
-                            const index = Math.round(e.nativeEvent.contentOffset.x / width);
-                            setCurrentImageIndex(index);
-                        }}
-                    >
-                        {product.images?.map((img, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => navigation.navigate('ImageViewer', {
-                                    images: product.images,
-                                    selectedIndex: index
-                                })}
-                            >
-                                <Image
-                                    source={{ uri: img }}
-                                    style={styles.galleryImage}
-                                />
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
+                    {product.images?.length > 0 ? (
+                        <ScrollView
+                            ref={scrollViewRef}
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            style={styles.imageGallery}
+                            onMomentumScrollEnd={(e) => {
+                                const index = Math.round(e.nativeEvent.contentOffset.x / width);
+                                setCurrentImageIndex(index);
+                            }}
+                        >
+                            {product.images.map((img, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    onPress={() => navigation.navigate('ImageViewer', {
+                                        images: product.images,
+                                        selectedIndex: index
+                                    })}
+                                >
+                                    <Image
+                                        source={{ uri: img }}
+                                        style={styles.galleryImage}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    ) : (
+                        <View style={[styles.galleryImage, styles.noImageContainer]}>
+                            <Text style={styles.noImageText}>
+                                {product.category_name
+                                    ? `No image found for ${product.category_name}`
+                                    : 'No product image available'}
+                            </Text>
+                        </View>
+                    )}
+
 
                     {/* Product Details Section */}
                     <View style={styles.detailsSection}>{renderDetails()}</View>
