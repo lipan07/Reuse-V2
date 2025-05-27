@@ -325,8 +325,8 @@ const ProductDetails = () => {
                     ) : (
                         <View style={[styles.galleryImage, styles.noImageContainer]}>
                             <Text style={styles.noImageText}>
-                                {product.category_name
-                                    ? `No image found for ${product.category_name}`
+                                {product.category.name
+                                    ? `No image found for \n ${product.category.name}`
                                     : 'No product image available'}
                             </Text>
                         </View>

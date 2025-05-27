@@ -10,25 +10,24 @@ const normalize = (size) => Math.round(scale * size);
 const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
   const categories = [
     { id: null, name: 'All', icon: 'apps', color: '#007bff' },
-    { id: '1', name: 'Cars', icon: 'car', color: '#6495ED' },
-    { id: '2', name: 'Property', icon: 'home', color: '#4682B4' },
-    { id: '7', name: 'Phones', icon: 'phone-portrait', color: '#32CD32' },
-    { id: '29', name: 'Tech', icon: 'tv', color: '#FFD700' },
-    { id: '24', name: 'Bikes', icon: 'bicycle', color: '#D2691E' },
-    { id: '45', name: 'Furniture', icon: 'bed', color: '#8A2BE2' },
-    { id: '51', name: 'Fashion', icon: 'shirt', color: '#FF69B4' },
-    { id: '55', name: 'Books', icon: 'book', color: '#FF6347' },
+    { id: '1', name: 'Cars', icon: 'car', color: '#64748b' },
+    { id: '2', name: 'Property', icon: 'home', color: '#ef4444' },
+    { id: '7', name: 'Phones', icon: 'phone-portrait', color: '#10b981' },
+    { id: '29', name: 'Tech', icon: 'tv', color: '#f59e0b' },
+    { id: '24', name: 'Bikes', icon: 'bicycle', color: '#3b82f6' },
+    { id: '45', name: 'Furniture', icon: 'bed', color: '#8b5cf6' },
+    { id: '51', name: 'Fashion', icon: 'shirt', color: '#ec4899' },
+    { id: '55', name: 'Books', icon: 'book', color: '#14b8a6' },
   ];
 
   const renderItem = ({ item }) => {
     const isSelected = selectedCategory === item.id;
     return (
-      < TouchableOpacity
-        style={
-          [
-            styles.categoryItem,
-            isSelected && styles.selectedItem
-          ]}
+      <TouchableOpacity
+        style={[
+          styles.categoryItem,
+          isSelected && styles.selectedItem
+        ]}
         onPress={() => onCategorySelect(item.id)}
       >
         <View style={[
@@ -37,31 +36,30 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
         ]}>
           <Icon
             name={item.icon}
-            size={normalize(28)}
-            color={isSelected ? '#007bff' : item.color}
+            size={normalize(23)}
+            color={isSelected ? '#ffffff' : item.color}
           />
         </View>
         <Text style={[
           styles.categoryName,
           isSelected && styles.selectedText
-        ]}>
+        ]} numberOfLines={1}>
           {item.name}
         </Text>
-      </TouchableOpacity >
+      </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Categories</Text>
       <FlatList
         data={categories}
         renderItem={renderItem}
         keyExtractor={(item) => item.id || 'all'}
-        horizontal={true}
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        scrollEnabled={true}
+        keyboardShouldPersistTaps="always"
       />
     </View>
   );
@@ -69,60 +67,49 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    // paddingVertical: normalize(16),
-    paddingHorizontal: normalize(4),
-  },
-  title: {
-    fontSize: normalize(14),
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: normalize(12),
-    paddingHorizontal: normalize(8),
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: normalize(8),
+    backgroundColor: '#ffffff',
+    paddingVertical: normalize(8),
   },
   listContent: {
-    paddingHorizontal: normalize(4),
+    paddingHorizontal: normalize(12),
   },
   categoryItem: {
-    width: normalize(72), // or any fixed width you prefer
     alignItems: 'center',
-    padding: normalize(4),
-    borderRadius: normalize(12),
-    backgroundColor: '#f8f9fa',
-    marginRight: normalize(8), // add spacing between items
+    marginRight: normalize(16),
   },
   iconContainer: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    padding: normalize(8),
-    borderRadius: normalize(10),
-    marginBottom: normalize(6),
+    backgroundColor: '#f8fafc',
+    padding: normalize(12),
+    borderRadius: normalize(12),
+    marginBottom: normalize(4),
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   selectedIconContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#007bff',
+    shadowColor: '#007bff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   categoryName: {
-    fontSize: normalize(12),
+    fontSize: normalize(11),
     fontWeight: '500',
-    color: '#57606f',
-    textAlign: 'center',
+    color: '#64748b',
+    maxWidth: normalize(80),
   },
   selectedText: {
     color: '#007bff',
     fontWeight: '600',
   },
-  selectedItem: {
-    backgroundColor: '#e3f2fd',
-    borderColor: '#007bff',
-    borderWidth: 1,
-    shadowColor: '#007bff',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    selectedItem: {
+    // borderWidth: 0.5,  // Thinner border
+    // shadowRadius: 2,  // Reduced shadow
+    // elevation: 2,  // Reduced elevation
   },
 });
 

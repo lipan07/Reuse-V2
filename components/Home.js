@@ -9,6 +9,7 @@ import BottomNavBar from './BottomNavBar';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import styles from '../assets/css/Home.styles';
 
 import {
   BannerAd,
@@ -280,7 +281,6 @@ const Home = () => {
       onPress={() => navigation.navigate('ProductDetails', { productDetails: item })}
     >
       <View style={styles.imageContainer}>
-
         <Swiper style={styles.swiper} showsPagination={false} autoplay autoplayTimeout={3}>
           {item.images && item.images.length > 0 ? (
             item.images.map((imageUri, index) => (
@@ -299,13 +299,21 @@ const Home = () => {
             </View>
           )}
         </Swiper>
-
       </View>
-      <Text style={styles.productName}>{item.title}</Text>
-      <Text style={styles.details} numberOfLines={2} ellipsizeMode="tail">
-        {item.post_details.description}
-      </Text>
-      <Text style={styles.price}>Price: ${item.post_details.amount}</Text>
+
+      {/* Compact Text Layout */}
+      <View style={styles.textContainer}>
+        <Text style={styles.productName} numberOfLines={1}>{item.title}</Text>
+        <Text style={styles.details} numberOfLines={2} ellipsizeMode="tail">
+          {item.post_details.description}
+        </Text>
+        <View style={styles.priceAddressContainer}>
+          <Text style={styles.price}>₹{item.post_details.amount}</Text>
+          <Text style={styles.address} numberOfLines={1}>
+            {item.address || 'Address not available'}
+          </Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
@@ -418,157 +426,5 @@ const Home = () => {
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  bannerAdContainer: {
-    marginHorizontal: -normalize(8),
-    marginBottom: normalize(8),
-  },
-  bannerAd: {
-    alignSelf: 'center',
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: normalize(8),
-    paddingHorizontal: normalize(8),
-    paddingVertical: normalizeVertical(3),
-    marginTop: normalizeVertical(10),      // Add or adjust this for top margin
-    marginBottom: normalizeVertical(10),   // Add or adjust this for bottom margin
-    marginHorizontal: normalize(2),
-  },
-  searchInput: {
-    flex: 1,
-    height: normalizeVertical(38), // Slightly taller for all screens
-    paddingHorizontal: normalize(12), // More horizontal padding
-    fontSize: normalize(14), // Slightly larger font
-    backgroundColor: '#fff',
-    borderRadius: normalize(6),
-    color: '#222',
-    // Ensure placeholder is not cut off
-    includeFontPadding: false,
-    paddingVertical: 0, // Remove vertical padding for better alignment
-  },
-  clearButton: { position: 'absolute', right: normalize(85), padding: normalize(4) },
-  searchButton: {
-    backgroundColor: '#007bff',
-    padding: normalize(8),
-    borderRadius: normalize(4),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: normalize(4),
-  },
-  filterButton: {
-    backgroundColor: '#007bff',
-    padding: normalize(8),
-    borderRadius: normalize(4),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: normalize(4),
-  },
-  recentSearchOverlay: {
-    position: 'absolute',
-    top: normalizeVertical(55),
-    left: normalize(8),
-    right: normalize(8),
-    backgroundColor: '#FFF',
-    borderRadius: normalize(4),
-    padding: normalize(8),
-    opacity: 0.95,
-    zIndex: 1,
-  },
-  productList: {
-    paddingHorizontal: normalize(4),
-    paddingBottom: normalizeVertical(48),
-    paddingTop: normalizeVertical(8),
-  },
-  productItem: {
-    flex: 1,
-    margin: normalize(4),
-    borderRadius: normalize(4),
-    padding: normalize(8),
-    alignItems: 'center',
-    backgroundColor: '#F9F9F9',
-    shadowColor: '#565656',
-    shadowOffset: { width: 0, height: normalizeVertical(3) },
-    shadowOpacity: 0.18,
-    shadowRadius: normalize(6),
-    elevation: 8,
-  },
-  imageContainer: { height: normalizeVertical(90), width: '100%', borderRadius: normalize(4), overflow: 'hidden', marginBottom: normalize(6) },
-  productImage: { width: '100%', height: '100%', resizeMode: 'cover' },
-  productName: { fontWeight: 'bold', textAlign: 'center', fontSize: normalize(14) },
-  details: { fontSize: normalize(12), marginTop: normalizeVertical(3), marginBottom: normalizeVertical(6) },
-  price: { fontSize: normalize(13), fontWeight: 'bold' },
-  noProductsText: { fontSize: normalize(11), textAlign: 'center', marginTop: normalizeVertical(12) },
-  recentSearchItem: {
-    paddingVertical: normalizeVertical(5),
-    fontSize: normalize(11),
-    color: '#007bff',
-  },
-  filterBadgeText: {
-    color: '#fff',
-    marginRight: normalize(5),
-    fontSize: normalize(9),
-  },
-  loaderTop: { marginBottom: normalize(8) },
-  loaderBottom: { marginTop: normalize(8) },
-  filterBadgeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: normalize(6),
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  filterBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#007bff',
-    borderRadius: normalize(12),
-    paddingVertical: normalizeVertical(3),
-    paddingHorizontal: normalize(8),
-    margin: normalize(3),
-  },
-  recommendedText: {
-    fontSize: normalize(14),
-    fontWeight: '600',
-    color: '#666',
-    marginVertical: normalizeVertical(12),
-    marginHorizontal: normalize(12),
-  },
-  noImageContainer: {
-    width: '100%',
-    height: normalizeVertical(90),
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#e6e6e6',
-    borderRadius: normalize(4),
-    marginBottom: normalize(6),
-  },
-  noImageText: {
-    color: '#777',
-    fontSize: normalize(12),
-    textAlign: 'center',
-    paddingHorizontal: normalize(4),
-  },
-  placeholderContainer: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
-  },
-
-  placeholderText: {
-    fontSize: normalize(12),
-    color: '#555',
-    textAlign: 'center',
-    paddingHorizontal: normalize(10),
-  },
-
-});
 
 export default Home;
