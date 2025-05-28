@@ -14,7 +14,9 @@ const iconMapping = {
 };
 
 const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isError, isRefreshing }) => {
-  const renderItem = ({ item }) => (
+  const rainbowColors = ['#FF0000', '#FF7F00', '#4B0082', '#00FF00', '#0000FF', '#FFFF00', '#9400D3'];
+
+  const renderItem = ({ item, index }) => (
     <TouchableHighlight
       underlayColor="#F0F0F0"
       style={styles.itemContainer}
@@ -24,7 +26,7 @@ const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isE
         <Icon
           name={iconMapping[item.guard_name] || 'tag'}
           size={24}
-          color="#4A90E2"
+          color={rainbowColors[index % rainbowColors.length]}
           style={styles.icon}
         />
         <Text style={styles.itemText}>{item.name}</Text>
@@ -38,6 +40,7 @@ const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isE
     </TouchableHighlight>
   );
 
+
   const renderFooter = () => {
     if (!isLoading || isRefreshing) return null;
     return <ActivityIndicator size="large" color="#4A90E2" style={styles.loadingIndicator} />;
@@ -46,7 +49,7 @@ const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isE
   return (
     <FlatList
       data={categories}
-      renderItem={renderItem}
+      renderItem={({ item, index }) => renderItem({ item, index })}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.listContent}
       ListFooterComponent={renderFooter}
@@ -62,6 +65,7 @@ const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isE
         )
       }
     />
+
   );
 });
 
