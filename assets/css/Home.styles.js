@@ -146,7 +146,7 @@ export default StyleSheet.create({
   },
   
   imageContainer: { 
-    height: normalizeVertical(80), // Reduced height
+    height: normalizeVertical(100), // Reduced height
     width: '100%', 
     borderRadius: normalize(4), 
     overflow: 'hidden', 
@@ -159,13 +159,13 @@ export default StyleSheet.create({
   
   productName: {
     fontWeight: '600',
-    fontSize: normalize(12), // Smaller font
+    fontSize: normalize(14), // Smaller font
     marginTop: normalizeVertical(2),
     color: '#333',
   },
   
   details: {
-    fontSize: normalize(11), // Smaller font
+    fontSize: normalize(12), // Smaller font
     marginTop: normalizeVertical(2),
     marginBottom: normalizeVertical(2),
     color: '#666',
@@ -180,7 +180,7 @@ export default StyleSheet.create({
   },
   
   price: {
-    fontSize: normalize(12), // Smaller font
+    fontSize: normalize(13), // Smaller font
     fontWeight: 'bold',
     color: '#007bff',
   },
