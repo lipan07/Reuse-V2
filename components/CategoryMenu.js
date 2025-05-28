@@ -36,7 +36,7 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
         ]}>
           <Icon
             name={item.icon}
-            size={normalize(23)}
+            size={normalize(25)}
             color={isSelected ? '#ffffff' : item.color}
           />
         </View>
