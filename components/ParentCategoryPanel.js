@@ -1,36 +1,66 @@
 import React, { memo } from 'react';
 import { View, Text, TouchableHighlight, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
+import FA5Icon from 'react-native-vector-icons/FontAwesome6';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
 const iconMapping = {
-  electronics: 'television',
-  fashion: 'tshirt-crew',
-  furniture: 'sofa',
-  cars: 'car',
-  bikes: 'motorbike',
-  mobiles: 'cellphone',
-  properties: 'home',
-  services: 'tools',
+  electronics: { name: 'television', type: 'MC' },
+  fashion: { name: 'tshirt-crew', type: 'MC' },
+  furniture: { name: 'sofa', type: 'MC' },
+  cars: { name: 'car', type: 'MC' },
+  bikes: { name: 'motorbike', type: 'MC' },
+  mobiles: { name: 'mobile-alt', type: 'Fontisto' },
+  services: { name: 'tools', type: 'MC' },
+  commercial_vehicle_spare_part: { name: 'tow-truck', type: 'MC' },
+  boks_sports_hobbies: { name: 'menu-book', type: 'M' },
+  electronics_appliances: { name: 'electrical-services', type: 'M' },
+  commercial_mechinery_spare_parts: { name: 'truck-ramp-box', type: 'FA5' },
+  pets: { name: 'cat', type: 'FA5' },
+  job: { name: 'people-carry-box', type: 'FA5' },
+  properties: { name: 'holiday-village', type: 'Fontisto' },
 };
 
 const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isError, isRefreshing }) => {
-  const rainbowColors = ['#FF0000', '#FF7F00', '#4B0082', '#00FF00', '#0000FF', '#FFFF00', '#9400D3'];
+  const rainbowColors = ['#FF0000', '#FF7F00', '#4B0082', '#00FF00', '#0000FF', '#FFFFF', '#9400D3'];
 
-  const renderItem = ({ item, index }) => (
+const renderItem = ({ item, index }) => {
+  const iconInfo = iconMapping[item.guard_name] || { name: 'tag', type: 'MC' };
+
+  let IconComponent;
+  switch (iconInfo.type) {
+    case 'M':
+      IconComponent = MIcon;
+      break;
+    case 'FA5':
+      IconComponent = FA5Icon;
+      break;
+    case 'Fontisto':
+      IconComponent = Fontisto;
+      break;
+    case 'MC':
+    default:
+      IconComponent = MCIcon;
+      break;
+  }
+
+  return (
     <TouchableHighlight
       underlayColor="#F0F0F0"
       style={styles.itemContainer}
       onPress={() => onSelectCategory(item)}
     >
       <View style={styles.itemContent}>
-        <Icon
-          name={iconMapping[item.guard_name] || 'tag'}
+        <IconComponent
+          name={iconInfo.name}
           size={24}
           color={rainbowColors[index % rainbowColors.length]}
           style={styles.icon}
+          solid // you can remove this if not needed; FA5 uses `solid` or `regular`
         />
         <Text style={styles.itemText}>{item.name}</Text>
-        <Icon
+        <MCIcon
           name="chevron-right"
           size={20}
           color="#888888"
@@ -39,6 +69,9 @@ const ParentCategoryPanel = memo(({ categories, onSelectCategory, isLoading, isE
       </View>
     </TouchableHighlight>
   );
+};
+
+
 
 
   const renderFooter = () => {
