@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+    StyleSheet,
+    Alert,
+    Dimensions
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+const { width, height } = Dimensions.get('window');
+const scale = width / 375;
+const verticalScale = height / 812;
+const normalize = (size) => Math.round(scale * size);
+const normalizeVertical = (size) => Math.round(verticalScale * size);
 
 const HelpSupport = () => {
     const [name, setName] = useState('');
@@ -23,7 +38,7 @@ const HelpSupport = () => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
-                <Icon name="support-agent" size={28} color="#fff" />
+                <Icon name="support-agent" size={normalize(28)} color="#fff" />
                 <Text style={styles.title}>Help & Support</Text>
             </View>
 
@@ -36,24 +51,24 @@ const HelpSupport = () => {
                 <Text style={styles.sectionTitle}>Common Questions</Text>
 
                 <View style={styles.questionContainer}>
-                    <Icon name="help" size={18} color="#0984e3" style={styles.icon} />
-                    <View>
+                    <Icon name="help" size={normalize(18)} color="#0984e3" style={styles.icon} />
+                    <View style={styles.textWrapper}>
                         <Text style={styles.question}>How do I post an ad?</Text>
                         <Text style={styles.answer}>Go to the 'Sell' tab and follow the steps to upload product details and images.</Text>
                     </View>
                 </View>
 
                 <View style={styles.questionContainer}>
-                    <Icon name="help" size={18} color="#0984e3" style={styles.icon} />
-                    <View>
+                    <Icon name="help" size={normalize(18)} color="#0984e3" style={styles.icon} />
+                    <View style={styles.textWrapper}>
                         <Text style={styles.question}>Is it free to post ads?</Text>
                         <Text style={styles.answer}>Yes! Posting on Reuse is 100% free for everyone.</Text>
                     </View>
                 </View>
 
                 <View style={styles.questionContainer}>
-                    <Icon name="help" size={18} color="#0984e3" style={styles.icon} />
-                    <View>
+                    <Icon name="help" size={normalize(18)} color="#0984e3" style={styles.icon} />
+                    <View style={styles.textWrapper}>
                         <Text style={styles.question}>What if I get scammed?</Text>
                         <Text style={styles.answer}>
                             Reuse encourages face-to-face deals in safe locations. If you suspect fraud, report the user immediately.
@@ -62,8 +77,8 @@ const HelpSupport = () => {
                 </View>
 
                 <View style={styles.questionContainer}>
-                    <Icon name="warning" size={18} color="#e74c3c" style={styles.icon} />
-                    <View>
+                    <Icon name="warning" size={normalize(18)} color="#e74c3c" style={styles.icon} />
+                    <View style={styles.textWrapper}>
                         <Text style={[styles.question, styles.warning]}>Should I pay in advance before receiving the product?</Text>
                         <Text style={styles.answer}>
                             ❌ No. Reuse strongly advises users never to pay any advance money before inspecting and receiving the product.
@@ -80,7 +95,7 @@ const HelpSupport = () => {
                 </Text>
 
                 <View style={styles.inputContainer}>
-                    <Icon name="person" size={20} color="#7f8c8d" style={styles.inputIcon} />
+                    <Icon name="person" size={normalize(20)} color="#7f8c8d" style={styles.inputIcon} />
                     <TextInput
                         placeholder="Your Name"
                         placeholderTextColor="#95a5a6"
@@ -91,7 +106,7 @@ const HelpSupport = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Icon name="phone" size={20} color="#7f8c8d" style={styles.inputIcon} />
+                    <Icon name="phone" size={normalize(20)} color="#7f8c8d" style={styles.inputIcon} />
                     <TextInput
                         placeholder="Phone Number"
                         placeholderTextColor="#95a5a6"
@@ -103,7 +118,7 @@ const HelpSupport = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Icon name="info" size={20} color="#7f8c8d" style={styles.inputIcon} />
+                    <Icon name="info" size={normalize(20)} color="#7f8c8d" style={styles.inputIcon} />
                     <TextInput
                         placeholder="Issue Type (optional)"
                         placeholderTextColor="#95a5a6"
@@ -114,7 +129,7 @@ const HelpSupport = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Icon name="message" size={20} color="#7f8c8d" style={[styles.inputIcon, { alignSelf: 'flex-start', marginTop: 12 }]} />
+                    <Icon name="message" size={normalize(20)} color="#7f8c8d" style={[styles.inputIcon, { alignSelf: 'flex-start', marginTop: normalizeVertical(12) }]} />
                     <TextInput
                         placeholder="Describe your issue"
                         placeholderTextColor="#95a5a6"
@@ -128,18 +143,18 @@ const HelpSupport = () => {
 
                 <TouchableOpacity onPress={handleSubmit} style={styles.button}>
                     <Text style={styles.buttonText}>Submit Request</Text>
-                    <Icon name="send" size={18} color="#fff" style={styles.buttonIcon} />
+                    <Icon name="send" size={normalize(18)} color="#fff" style={styles.buttonIcon} />
                 </TouchableOpacity>
             </View>
 
             <View style={styles.contactInfo}>
                 <Text style={styles.contactTitle}>Other Ways to Reach Us</Text>
                 <View style={styles.contactRow}>
-                    <Icon name="email" size={18} color="#0984e3" />
+                    <Icon name="email" size={normalize(18)} color="#0984e3" />
                     <Text style={styles.contactText}>support@reuse.com</Text>
                 </View>
                 <View style={styles.contactRow}>
-                    <Icon name="phone" size={18} color="#0984e3" />
+                    <Icon name="phone" size={normalize(18)} color="#0984e3" />
                     <Text style={styles.contactText}>+1 (800) 123-4567</Text>
                 </View>
             </View>
@@ -149,37 +164,37 @@ const HelpSupport = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        padding: normalize(16),
         backgroundColor: '#f8f9fa',
-        paddingBottom: 30,
+        paddingBottom: normalizeVertical(30),
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#0984e3',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 20,
-        marginTop: 10,
+        padding: normalize(16),
+        borderRadius: normalize(12),
+        marginBottom: normalizeVertical(20),
+        marginTop: normalizeVertical(10),
     },
     title: {
-        fontSize: 24,
+        fontSize: normalize(24),
         fontWeight: '800',
         color: '#fff',
-        marginLeft: 12,
+        marginLeft: normalize(12),
     },
     description: {
-        fontSize: 16,
+        fontSize: normalize(16),
         color: '#57606f',
-        marginBottom: 24,
+        marginBottom: normalizeVertical(24),
         fontWeight: '400',
-        lineHeight: 22,
+        lineHeight: normalizeVertical(22),
     },
     card: {
         backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 24,
+        borderRadius: normalize(16),
+        padding: normalize(10),
+        marginBottom: normalizeVertical(24),
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -187,80 +202,86 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     sectionTitle: {
-        fontSize: 20,
+        fontSize: normalize(20),
         fontWeight: '700',
         color: '#2d3436',
-        marginBottom: 16,
+        marginBottom: normalizeVertical(16),
     },
     questionContainer: {
         flexDirection: 'row',
-        marginBottom: 20,
+        marginBottom: normalizeVertical(20),
+        alignItems: 'flex-start',
     },
     icon: {
-        marginRight: 12,
-        marginTop: 4,
+        marginRight: normalize(12),
+        marginTop: normalizeVertical(4),
+    },
+    textWrapper: {
+        flex: 1,
+        flexWrap: 'wrap',
+        maxWidth: '90%',
     },
     question: {
         fontWeight: '600',
-        fontSize: 16,
-        marginBottom: 6,
+        fontSize: normalize(16),
+        marginBottom: normalizeVertical(6),
         color: '#2d3436',
     },
     warning: {
         color: '#e74c3c',
     },
     answer: {
-        fontSize: 15,
+        fontSize: normalize(15),
         color: '#636e72',
-        lineHeight: 22,
+        lineHeight: normalizeVertical(22),
     },
     inputContainer: {
         flexDirection: 'row',
-        marginBottom: 16,
+        marginBottom: normalizeVertical(16),
     },
     inputIcon: {
         position: 'absolute',
-        left: 14,
-        top: 14,
+        left: normalize(14),
+        top: normalize(14),
         zIndex: 1,
     },
     input: {
         flex: 1,
-        height: 50,
+        height: normalizeVertical(50),
         backgroundColor: '#f8f9fa',
-        borderRadius: 12,
-        paddingHorizontal: 46,
-        fontSize: 15,
+        borderRadius: normalize(12),
+        paddingHorizontal: normalize(46),
+        fontSize: normalize(15),
         borderColor: '#e0e0e0',
         borderWidth: 1,
         color: '#2d3436',
     },
     messageInput: {
-        height: 120,
-        paddingTop: 16,
-        paddingHorizontal: 46,
+        height: normalizeVertical(120),
+        paddingTop: normalizeVertical(16),
+        paddingHorizontal: normalize(46),
     },
     button: {
         backgroundColor: '#0984e3',
-        paddingVertical: 16,
-        borderRadius: 12,
+        paddingVertical: normalizeVertical(16),
+        borderRadius: normalize(12),
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: normalizeVertical(10),
         flexDirection: 'row',
         justifyContent: 'center',
     },
     buttonText: {
         color: '#fff',
         fontWeight: '700',
-        fontSize: 16,
+        fontSize: normalize(16),
     },
     buttonIcon: {
-        marginLeft: 8,
+        marginLeft: normalize(8),
     },
     contactInfo: {
         backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 20,
+        borderRadius: normalize(16),
+        padding: normalize(20),
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -268,21 +289,41 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     contactTitle: {
-        fontSize: 18,
+        fontSize: normalize(18),
         fontWeight: '700',
         color: '#2d3436',
-        marginBottom: 16,
+        marginBottom: normalizeVertical(16),
     },
     contactRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: normalizeVertical(12),
     },
     contactText: {
-        fontSize: 16,
+        fontSize: normalize(16),
         color: '#57606f',
-        marginLeft: 12,
+        marginLeft: normalize(12),
     },
+    questionContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginBottom: normalizeVertical(20),
+        flexWrap: 'nowrap',
+        // paddingRight: normalize(4),
+    },
+
+    textWrapper: {
+        flex: 1,
+        flexShrink: 1,
+    },
+
+    answer: {
+        fontSize: normalize(15),
+        color: '#636e72',
+        lineHeight: normalizeVertical(22),
+        flexWrap: 'wrap',
+    },
+
 });
 
 export default HelpSupport;

@@ -2,9 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+const { width, height } = Dimensions.get('window');
+const scale = width / 375;
+const verticalScale = height / 812;
+
+const normalize = (size) => Math.round(scale * size);
+const normalizeVertical = (size) => Math.round(verticalScale * size);
+
 const PackagePage = () => {
   const [expandedId, setExpandedId] = useState(null);
-
   const packageData = [
     {
       id: '1',
@@ -173,38 +179,37 @@ const PackagePage = () => {
   );
 };
 
-const windowWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
-    paddingHorizontal: 16,
-    paddingTop: 24,
+    paddingHorizontal: normalize(16),
+    paddingTop: normalizeVertical(24),
   },
   header: {
-    marginBottom: 24,
+    marginBottom: normalizeVertical(24),
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: normalize(28),
     fontWeight: '800',
     color: '#2c3e50',
-    marginBottom: 8,
+    marginBottom: normalizeVertical(8),
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: normalize(16),
     color: '#7f8c8d',
     textAlign: 'center',
     maxWidth: '90%',
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: normalize(20),
     fontWeight: '700',
     color: '#2c3e50',
-    marginBottom: 16,
+    marginBottom: normalizeVertical(16),
   },
   benefitsContainer: {
-    marginBottom: 24,
+    marginBottom: normalizeVertical(24),
   },
   benefitsGrid: {
     flexDirection: 'row',
@@ -212,11 +217,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   benefitCard: {
-    width: (windowWidth - 48) / 2,
+    width: (width - normalize(48)) / 2,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: normalize(12),
+    padding: normalize(16),
+    marginBottom: normalizeVertical(12),
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,
@@ -226,17 +231,17 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   benefitText: {
-    fontSize: 14,
+    fontSize: normalize(14),
     fontWeight: '600',
     color: '#34495e',
-    marginTop: 8,
+    marginTop: normalizeVertical(8),
     textAlign: 'center',
   },
   packageItem: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+    borderRadius: normalize(16),
+    padding: normalize(20),
+    marginBottom: normalizeVertical(16),
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
@@ -255,91 +260,92 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   packageIcon: {
-    width: 50,
-    height: 50,
+    width: normalize(50),
+    height: normalize(50),
     resizeMode: 'contain',
-    marginRight: 16,
+    marginRight: normalize(16),
   },
   titleContainer: {
     flex: 1,
   },
   packageTitle: {
     fontWeight: '700',
-    fontSize: 18,
+    fontSize: normalize(18),
     color: '#2c3e50',
   },
   packagePrice: {
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: normalize(16),
     color: '#3498db',
   },
   detailsContainer: {
-    marginTop: 20,
-    paddingTop: 20,
+    marginTop: normalizeVertical(20),
+    paddingTop: normalizeVertical(20),
     borderTopWidth: 1,
     borderTopColor: '#ecf0f1',
   },
   descriptionText: {
-    fontSize: 15,
+    fontSize: normalize(15),
     color: '#7f8c8d',
-    marginBottom: 16,
-    lineHeight: 22,
+    marginBottom: normalizeVertical(16),
+    lineHeight: normalizeVertical(22),
   },
   featuresTitle: {
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: normalize(16),
     color: '#2c3e50',
-    marginBottom: 12,
+    marginBottom: normalizeVertical(12),
   },
   featuresContainer: {
-    marginBottom: 20,
+    marginBottom: normalizeVertical(20),
   },
   featureItem: {
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: normalizeVertical(10),
   },
   featureIcon: {
-    marginRight: 8,
-    marginTop: 3,
+    marginRight: normalize(8),
+    marginTop: normalizeVertical(3),
   },
   featureText: {
     flex: 1,
-    fontSize: 15,
+    fontSize: normalize(15),
     color: '#34495e',
   },
   selectButton: {
     backgroundColor: '#27ae60',
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: normalizeVertical(14),
+    borderRadius: normalize(12),
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: normalizeVertical(10),
   },
   selectButtonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: normalize(16),
   },
   faqContainer: {
-    marginTop: 8,
-    marginBottom: 30,
+    marginTop: normalizeVertical(8),
+    marginBottom: normalizeVertical(30),
   },
   faqItem: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: normalize(12),
+    padding: normalize(16),
+    marginBottom: normalizeVertical(12),
   },
   faqQuestion: {
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: normalize(16),
     color: '#2c3e50',
-    marginBottom: 8,
+    marginBottom: normalizeVertical(8),
   },
   faqAnswer: {
-    fontSize: 14,
+    fontSize: normalize(14),
     color: '#7f8c8d',
-    lineHeight: 20,
+    lineHeight: normalizeVertical(20),
   },
 });
+
 
 export default PackagePage;
