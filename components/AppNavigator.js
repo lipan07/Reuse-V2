@@ -50,6 +50,7 @@ import AddCommercialHeavyMachinery from './AddProduct/AddCommercialHeavyMachiner
 import LocationPicker from './LocationPicker';
 import ChangePassword from './ChangePassword';
 import SubCategoryScreen from './Screens/SubCategoryScreen';
+import HelpSupport from './HelpSupport';
 
 const Stack = createStackNavigator();
 
@@ -161,6 +162,7 @@ const AppNavigator = () => {
         <Stack.Screen name="AddCommercialHeavyMachinery" component={AddCommercialHeavyMachinery} />
 
         <Stack.Screen name="SubCategories" component={SubCategoryScreen} />
+        <Stack.Screen name="HelpSupport" component={HelpSupport} />
       </Stack.Navigator>
     </>
   );

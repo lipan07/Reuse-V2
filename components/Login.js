@@ -192,7 +192,7 @@ const Login = () => {
 
    return (
       <>
-         <StatusBar backgroundColor="#f0f4f8" barStyle="dark-content" />
+         <StatusBar backgroundColor="#f8f9fa" barStyle="dark-content" />
          <View style={styles.container}>
             <ModalScreen
                visible={showAlert}
@@ -202,7 +202,7 @@ const Login = () => {
                onClose={() => setShowAlert(false)}
             />
 
-            <Text style={styles.loginTitle}>Welcome to Reuse!</Text>
+            <Text style={styles.loginTitle}>Welcome to <Text style={styles.brandName}>Reuse</Text>!</Text>
             <Text style={styles.loginSubtitle}>Login to your account</Text>
 
             <View style={styles.phoneInputContainer}>
@@ -220,8 +220,8 @@ const Login = () => {
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
                   keyboardType="phone-pad"
-                  placeholder="Enter phone number"
-                  placeholderTextColor="#999"
+                  placeholder="Phone number"
+                  placeholderTextColor="#bbb"
                />
             </View>
 
@@ -230,18 +230,18 @@ const Login = () => {
                   ref={otpInputRef}
                   style={styles.input}
                   placeholder="Enter OTP"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#bbb"
                   value={otp}
                   onChangeText={setOtp}
                   keyboardType="number-pad"
-                  autoFocus={true}
+                  autoFocus
                />
             )}
 
             <TouchableOpacity
                style={styles.loginButton}
                onPress={showOtpField ? handleOtpSubmit : handlePhoneNumberSubmit}
-               activeOpacity={0.8}
+               activeOpacity={0.85}
             >
                <Text style={styles.buttonText}>
                   {showOtpField ? 'Verify OTP' : 'Send OTP'}
@@ -254,7 +254,8 @@ const Login = () => {
                </TouchableOpacity>
             )}
 
-            {/* Country Code Selection Modal */}
+            <Text style={styles.freeServiceText}>Always 100% free — no charges, no subscriptions, ever.</Text>
+
             <Modal visible={isModalVisible} transparent animationType="slide">
                <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
                   <View style={styles.modalOverlay}>
@@ -275,7 +276,7 @@ const Login = () => {
                               <TextInput
                                  style={styles.searchInput}
                                  placeholder="Search country or code"
-                                 placeholderTextColor="#999"
+                                 placeholderTextColor="#aaa"
                                  value={searchQuery}
                                  onChangeText={setSearchQuery}
                               />
@@ -301,114 +302,111 @@ const Login = () => {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      padding: 32,
-      backgroundColor: '#f8f9fa',
+      padding: 24,
+      backgroundColor: '#f9fafb',
       justifyContent: 'center',
    },
    loginTitle: {
-      fontSize: 32,
-      fontWeight: '800',
+      fontSize: 30,
+      fontWeight: '700',
       color: '#2d3436',
-      marginBottom: 8,
+      marginBottom: 4,
       textAlign: 'center',
-      letterSpacing: -0.5,
+   },
+   brandName: {
+      color: '#0984e3',
    },
    loginSubtitle: {
       fontSize: 16,
-      color: '#7f8c8d',
-      marginBottom: 40,
+      color: '#636e72',
+      marginBottom: 28,
       textAlign: 'center',
-      fontWeight: '500',
+   },
+   freeServiceText: {
+      textAlign: 'center',
+      fontSize: 14,
+      color: '#b2bec3',
+      marginBottom: 28,
    },
    phoneInputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 24,
+      marginBottom: 20,
       backgroundColor: '#fff',
-      borderRadius: 16,
-      paddingHorizontal: 12,
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
-      shadowRadius: 8,
+      borderRadius: 12,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: '#dfe6e9',
    },
    countryCodeInput: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      height: 56,
-      paddingHorizontal: 16,
-      backgroundColor: '#fff',
+      justifyContent: 'center',
+      paddingRight: 10,
    },
    countryCodeText: {
       fontSize: 16,
       color: '#2d3436',
       fontWeight: '600',
-      marginRight: 8,
    },
    phoneNumberInput: {
       flex: 1,
-      height: 56,
+      height: 48,
+      fontSize: 16,
+      color: '#2d3436',
+   },
+   input: {
+      height: 48,
+      borderRadius: 12,
+      backgroundColor: '#fff',
       paddingHorizontal: 16,
       fontSize: 16,
       color: '#2d3436',
-      fontWeight: '500',
-   },
-   input: {
-      height: 56,
-      borderWidth: 0,
-      borderRadius: 16,
-      paddingHorizontal: 20,
-      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderColor: '#dfe6e9',
       marginBottom: 20,
-      fontSize: 16,
-      color: '#2d3436',
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.08,
-      shadowRadius: 8,
    },
    loginButton: {
       backgroundColor: '#0984e3',
-      height: 56,
-      borderRadius: 16,
+      height: 52,
+      borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 24,
-      elevation: 4,
-      shadowColor: '#0984e3',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
+      marginTop: 10,
+   },
+   logoutButton: {
+      backgroundColor: '#d63031',
+      height: 48,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 20,
    },
    buttonText: {
       color: '#fff',
       fontSize: 16,
       fontWeight: '700',
-      letterSpacing: 0.5,
    },
-   // Country Code Modal
    modalOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.4)',
+      backgroundColor: 'rgba(0,0,0,0.5)',
       justifyContent: 'flex-end',
    },
    modalContainer: {
       backgroundColor: '#fff',
       height: '60%',
-      borderTopLeftRadius: 28,
-      borderTopRightRadius: 28,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
       paddingTop: 16,
    },
    modalHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 20,
+      paddingHorizontal: 20,
+      paddingBottom: 12,
       borderBottomWidth: 1,
-      borderBottomColor: '#f1f2f6',
+      borderBottomColor: '#ecf0f1',
    },
    modalTitle: {
       fontSize: 20,
@@ -418,33 +416,28 @@ const styles = StyleSheet.create({
    searchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: 20,
-      marginLeft: 10,
-      marginRight: 10,
-      marginBottom: 12,
+      margin: 16,
       backgroundColor: '#f1f2f6',
-      borderRadius: 14,
+      borderRadius: 12,
+      paddingHorizontal: 12,
    },
    searchIcon: {
-      marginLeft: 12,
       marginRight: 8,
    },
    searchInput: {
       flex: 1,
-      height: 52,
-      backgroundColor: 'transparent',
-      borderRadius: 14,
+      height: 44,
       fontSize: 16,
       color: '#2d3436',
-      fontWeight: '500',
-      paddingLeft: 0, // Remove extra padding
    },
-
    countryCodeItem: {
-      paddingVertical: 18,
-      paddingHorizontal: 24,
+      paddingVertical: 14,
+      paddingHorizontal: 20,
       borderBottomWidth: 1,
-      borderBottomColor: '#f1f2f6',
+      borderBottomColor: '#ecf0f1',
+   },
+   countryList: {
+      paddingBottom: 20,
    },
 });
 

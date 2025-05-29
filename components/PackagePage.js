@@ -1,73 +1,344 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const PackagePage = () => {
+  const [expandedId, setExpandedId] = useState(null);
+
   const packageData = [
-    { id: '1', title: 'General', price: '$9.99', icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png' },
-    { id: '2', title: 'Standard', price: '$19.99', icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png' },
-    { id: '3', title: 'Premium', price: '$29.99', icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png' },
-    { id: '4', title: 'Super Premium', price: '$49.99', icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png' },
-    // Add more package items as needed
+    {
+      id: '1',
+      title: 'General Listing',
+      price: '$9.99/month',
+      icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png',
+      features: [
+        'List up to 10 products',
+        'Basic product visibility',
+        'Standard customer support',
+        '30-day listing duration',
+        'Mobile & electronics focus'
+      ],
+      description: 'Perfect for individual sellers listing a few items occasionally'
+    },
+    {
+      id: '2',
+      title: 'Standard Seller',
+      price: '$19.99/month',
+      icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png',
+      features: [
+        'List up to 50 products',
+        'Enhanced search visibility',
+        'Priority customer support',
+        '90-day listing duration',
+        'Special badges for your listings',
+        'Machinery & vehicles category'
+      ],
+      description: 'Ideal for regular sellers with multiple items across categories'
+    },
+    {
+      id: '3',
+      title: 'Premium Vendor',
+      price: '$29.99/month',
+      icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png',
+      features: [
+        'Unlimited product listings',
+        'Top search priority placement',
+        '24/7 dedicated support',
+        'Featured in category highlights',
+        'Professional storefront page',
+        'Real estate & property focus',
+        'Promotional email inclusion'
+      ],
+      description: 'For power sellers and businesses with high-volume listings'
+    },
+    {
+      id: '4',
+      title: 'Enterprise',
+      price: 'Custom Pricing',
+      icon: 'https://cdn.icon-icons.com/icons2/3233/PNG/512/empty_box_package_icon_197143.png',
+      features: [
+        'Customizable storefront',
+        'API access for inventory sync',
+        'Dedicated account manager',
+        'Bulk listing tools',
+        'Advanced analytics dashboard',
+        'Cross-promotion opportunities',
+        'White-glove onboarding',
+        'Multi-user access'
+      ],
+      description: 'For large businesses and professional resellers'
+    },
   ];
 
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   const renderPackageItem = ({ item }) => (
-    <TouchableOpacity style={styles.packageItem}>
-      <Image source={{ uri: item.icon }} style={styles.packageIcon} />
-      <Text style={styles.packageTitle}>{item.title}</Text>
-      <Text style={styles.packagePrice}>{item.price}</Text>
+    <TouchableOpacity
+      style={[
+        styles.packageItem,
+        expandedId === item.id && styles.expandedItem
+      ]}
+      onPress={() => toggleExpand(item.id)}
+    >
+      <View style={styles.packageHeader}>
+        <Image source={{ uri: item.icon }} style={styles.packageIcon} />
+        <View style={styles.titleContainer}>
+          <Text style={styles.packageTitle}>{item.title}</Text>
+          <Text style={styles.packagePrice}>{item.price}</Text>
+        </View>
+        <Icon
+          name={expandedId === item.id ? 'expand-less' : 'expand-more'}
+          size={24}
+          color="#555"
+        />
+      </View>
+
+      {expandedId === item.id && (
+        <View style={styles.detailsContainer}>
+          <Text style={styles.descriptionText}>{item.description}</Text>
+
+          <Text style={styles.featuresTitle}>Package Features:</Text>
+          <View style={styles.featuresContainer}>
+            {item.features.map((feature, index) => (
+              <View key={index} style={styles.featureItem}>
+                <Icon name="check-circle" size={18} color="#27ae60" style={styles.featureIcon} />
+                <Text style={styles.featureText}>{feature}</Text>
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity style={styles.selectButton}>
+            <Text style={styles.selectButtonText}>Select Package</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Seller Packages</Text>
+        <Text style={styles.headerSubtitle}>Boost your sales with our specialized seller packages</Text>
+      </View>
+
+      <View style={styles.benefitsContainer}>
+        <Text style={styles.sectionTitle}>Why Upgrade?</Text>
+        <View style={styles.benefitsGrid}>
+          <View style={styles.benefitCard}>
+            <Icon name="visibility" size={28} color="#3498db" />
+            <Text style={styles.benefitText}>Increased Visibility</Text>
+          </View>
+          <View style={styles.benefitCard}>
+            <Icon name="star" size={28} color="#f39c12" />
+            <Text style={styles.benefitText}>Premium Badges</Text>
+          </View>
+          <View style={styles.benefitCard}>
+            <Icon name="trending-up" size={28} color="#2ecc71" />
+            <Text style={styles.benefitText}>Higher Sales</Text>
+          </View>
+          <View style={styles.benefitCard}>
+            <Icon name="headset-mic" size={28} color="#9b59b6" />
+            <Text style={styles.benefitText}>Priority Support</Text>
+          </View>
+        </View>
+      </View>
+
+      <Text style={styles.sectionTitle}>Choose Your Package</Text>
       <FlatList
         data={packageData}
         renderItem={renderPackageItem}
         keyExtractor={(item) => item.id}
-        numColumns={2}
-        contentContainerStyle={styles.packageList}
+        scrollEnabled={false}
       />
-    </View>
+
+      <View style={styles.faqContainer}>
+        <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+        <View style={styles.faqItem}>
+          <Text style={styles.faqQuestion}>Can I switch packages later?</Text>
+          <Text style={styles.faqAnswer}>Yes, you can upgrade or downgrade at any time. Your billing will be prorated accordingly.</Text>
+        </View>
+        <View style={styles.faqItem}>
+          <Text style={styles.faqQuestion}>Do packages auto-renew?</Text>
+          <Text style={styles.faqAnswer}>Packages renew automatically each month. You can cancel anytime in your account settings.</Text>
+        </View>
+        <View style={styles.faqItem}>
+          <Text style={styles.faqQuestion}>What payment methods do you accept?</Text>
+          <Text style={styles.faqAnswer}>We accept all major credit cards, PayPal, and bank transfers for enterprise accounts.</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
+const windowWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 10,
-    paddingTop: 10,
+    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 16,
+    paddingTop: 24,
   },
-  packageList: {
+  header: {
+    marginBottom: 24,
     alignItems: 'center',
-    paddingBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#2c3e50',
+    marginBottom: 8,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    textAlign: 'center',
+    maxWidth: '90%',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2c3e50',
+    marginBottom: 16,
+  },
+  benefitsContainer: {
+    marginBottom: 24,
+  },
+  benefitsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  benefitCard: {
+    width: (windowWidth - 48) / 2,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  benefitText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#34495e',
+    marginTop: 8,
+    textAlign: 'center',
   },
   packageItem: {
-    width: '45%',
-    aspectRatio: 1, // Maintain aspect ratio for each item
-    margin: '2.5%',
-    borderRadius: 8,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E8E8E8',
-    padding: 12,
+    borderColor: '#e0e0e0',
+  },
+  expandedItem: {
+    borderColor: '#3498db',
+    borderWidth: 2,
+    shadowColor: '#3498db',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  packageHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FAFAFA',
+    justifyContent: 'space-between',
   },
   packageIcon: {
-    width: '60%',
-    height: '40%', // Adjust icon height
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
-    marginBottom: 12,
+    marginRight: 16,
+  },
+  titleContainer: {
+    flex: 1,
   },
   packageTitle: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 16,
-    marginBottom: 6,
+    fontWeight: '700',
+    fontSize: 18,
+    color: '#2c3e50',
   },
   packagePrice: {
-    color: '#007bff',
-    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 16,
+    color: '#3498db',
+  },
+  detailsContainer: {
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#ecf0f1',
+  },
+  descriptionText: {
+    fontSize: 15,
+    color: '#7f8c8d',
+    marginBottom: 16,
+    lineHeight: 22,
+  },
+  featuresTitle: {
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#2c3e50',
+    marginBottom: 12,
+  },
+  featuresContainer: {
+    marginBottom: 20,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  featureIcon: {
+    marginRight: 8,
+    marginTop: 3,
+  },
+  featureText: {
+    flex: 1,
+    fontSize: 15,
+    color: '#34495e',
+  },
+  selectButton: {
+    backgroundColor: '#27ae60',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  selectButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  faqContainer: {
+    marginTop: 8,
+    marginBottom: 30,
+  },
+  faqItem: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  faqQuestion: {
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#2c3e50',
+    marginBottom: 8,
+  },
+  faqAnswer: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    lineHeight: 20,
   },
 });
 

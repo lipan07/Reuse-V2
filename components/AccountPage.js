@@ -75,7 +75,7 @@ const AccountPage = ({ navigation }) => {
                     {renderAccountLink('Following', 'users', () => navigation.navigate('FollowingPage'), '#FF9800')}
                     {renderAccountLink('Buy Packages', 'shopping-cart', () => navigation.navigate('PackagePage'), '#FF9800')}
                     {renderAccountLink('Settings', 'cog', () => navigation.navigate('Settings'), '#2196F3')}
-                    {renderAccountLink('Help and Support', 'question-circle', () => { }, '#F44336')}
+                    {renderAccountLink('Help and Support', 'question-circle', () => navigation.navigate('HelpSupport'), '#F44336')}
                     {renderAccountLink('Logout', 'sign-out-alt', handleLogout, '#607D8B')}
                 </View>
             </View>
