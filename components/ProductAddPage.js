@@ -21,6 +21,12 @@ const ProductAddPage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await response.json();
+        data.categories.forEach((category) => {
+          console.log(category.parent_id, category.name);
+          if (category.parent_id === null) {
+            console.log(category.guard_name, category.name);
+          }
+        });
         setCategories(data.categories);
       } catch (error) {
         setIsError(true);

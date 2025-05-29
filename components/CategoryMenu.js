@@ -1,7 +1,11 @@
-// CategoryMenu.js
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
+import FA6Icon from 'react-native-vector-icons/FontAwesome6';
+import FA5Icon from 'react-native-vector-icons/FontAwesome5';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 const scale = width / 375;
@@ -9,19 +13,43 @@ const normalize = (size) => Math.round(scale * size);
 
 const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
   const categories = [
-    { id: null, name: 'All', icon: 'apps', color: '#007bff' },
-    { id: '1', name: 'Cars', icon: 'car', color: '#64748b' },
-    { id: '2', name: 'Property', icon: 'home', color: '#ef4444' },
-    { id: '7', name: 'Phones', icon: 'phone-portrait', color: '#10b981' },
-    { id: '29', name: 'Tech', icon: 'tv', color: '#f59e0b' },
-    { id: '24', name: 'Bikes', icon: 'bicycle', color: '#3b82f6' },
-    { id: '45', name: 'Furniture', icon: 'bed', color: '#8b5cf6' },
-    { id: '51', name: 'Fashion', icon: 'shirt', color: '#ec4899' },
-    { id: '55', name: 'Books', icon: 'book', color: '#14b8a6' },
+    { id: null, name: 'All', icon: 'apps', color: '#2563eb', type: 'Ion' },         // Blue
+    { id: '1', name: 'Cars', icon: 'car', color: '#dc2626', type: 'MC' },           // Red
+    { id: '2', name: 'Property', icon: 'home', color: '#16a34a', type: 'Ion' },     // Green
+    { id: '7', name: 'Phones', icon: 'mobile-alt', color: '#f59e0b', type: 'Fontisto' }, // Amber
+    { id: '29', name: 'Tech', icon: 'laptop', color: '#0ea5e9', type: 'FA5' },      // Sky blue
+    { id: '24', name: 'Bikes', icon: 'motorbike', color: '#8b5cf6', type: 'MC' },   // Violet
+    { id: '45', name: 'Furniture', icon: 'sofa', color: '#d97706', type: 'MC' },    // Warm yellow-brown
+    { id: '51', name: 'Fashion', icon: 'tshirt-crew', color: '#ec4899', type: 'MC' }, // Pink
+    { id: '55', name: 'Books', icon: 'menu-book', color: '#14b8a6', type: 'M' },    // Teal
   ];
 
   const renderItem = ({ item }) => {
     const isSelected = selectedCategory === item.id;
+
+    let IconComponent;
+    switch (item.type) {
+      case 'M':
+        IconComponent = MIcon;
+        break;
+      case 'FA6':
+        IconComponent = FA6Icon;
+        break;
+      case 'FA5':
+        IconComponent = FA5Icon;
+        break;
+      case 'Fontisto':
+        IconComponent = Fontisto;
+        break;
+      case 'Ion':
+        IconComponent = Ionicons;
+        break;
+      case 'MC':
+      default:
+        IconComponent = MCIcon;
+        break;
+    }
+
     return (
       <TouchableOpacity
         style={[
@@ -34,10 +62,11 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
           styles.iconContainer,
           isSelected && styles.selectedIconContainer
         ]}>
-          <Icon
+          <IconComponent
             name={item.icon}
-            size={normalize(25)}
+            size={normalize(24)}
             color={isSelected ? '#ffffff' : item.color}
+            style={styles.icon}
           />
         </View>
         <Text style={[
@@ -55,7 +84,7 @@ const CategoryMenu = ({ onCategorySelect, selectedCategory }) => {
       <FlatList
         data={categories}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id || 'all'}
+        keyExtractor={(item) => item.id?.toString() || 'all'}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
@@ -106,10 +135,11 @@ const styles = StyleSheet.create({
     color: '#007bff',
     fontWeight: '600',
   },
-    selectedItem: {
-    // borderWidth: 0.5,  // Thinner border
-    // shadowRadius: 2,  // Reduced shadow
-    // elevation: 2,  // Reduced elevation
+  selectedItem: {
+    // Future enhancements can go here
+  },
+  icon: {
+    textAlign: 'center',
   },
 });
 
