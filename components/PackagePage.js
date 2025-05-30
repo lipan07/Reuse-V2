@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, FlatList, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { width, height } = Dimensions.get('window');
@@ -96,7 +96,7 @@ const PackagePage = () => {
         </View>
         <Icon
           name={expandedId === item.id ? 'expand-less' : 'expand-more'}
-          size={24}
+          size={normalize(20)}
           color="#555"
         />
       </View>
@@ -109,7 +109,7 @@ const PackagePage = () => {
           <View style={styles.featuresContainer}>
             {item.features.map((feature, index) => (
               <View key={index} style={styles.featureItem}>
-                <Icon name="check-circle" size={18} color="#27ae60" style={styles.featureIcon} />
+                <Icon name="check-circle" size={normalize(16)} color="#27ae60" style={styles.featureIcon} />
                 <Text style={styles.featureText}>{feature}</Text>
               </View>
             ))}
@@ -124,29 +124,29 @@ const PackagePage = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Seller Packages</Text>
-        <Text style={styles.headerSubtitle}>Boost your sales with our specialized seller packages</Text>
+        <Text style={styles.headerSubtitle}>Boost your sales with specialized seller packages</Text>
       </View>
 
       <View style={styles.benefitsContainer}>
         <Text style={styles.sectionTitle}>Why Upgrade?</Text>
         <View style={styles.benefitsGrid}>
           <View style={styles.benefitCard}>
-            <Icon name="visibility" size={28} color="#3498db" />
+            <Icon name="visibility" size={normalize(20)} color="#3498db" />
             <Text style={styles.benefitText}>Increased Visibility</Text>
           </View>
           <View style={styles.benefitCard}>
-            <Icon name="star" size={28} color="#f39c12" />
+            <Icon name="star" size={normalize(20)} color="#f39c12" />
             <Text style={styles.benefitText}>Premium Badges</Text>
           </View>
           <View style={styles.benefitCard}>
-            <Icon name="trending-up" size={28} color="#2ecc71" />
+            <Icon name="trending-up" size={normalize(20)} color="#2ecc71" />
             <Text style={styles.benefitText}>Higher Sales</Text>
           </View>
           <View style={styles.benefitCard}>
-            <Icon name="headset-mic" size={28} color="#9b59b6" />
+            <Icon name="headset-mic" size={normalize(20)} color="#9b59b6" />
             <Text style={styles.benefitText}>Priority Support</Text>
           </View>
         </View>
@@ -183,33 +183,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+    paddingTop: normalizeVertical(50),
+  },
+  contentContainer: {
     paddingHorizontal: normalize(16),
-    paddingTop: normalizeVertical(24),
+    paddingTop: normalizeVertical(16),
+    paddingBottom: normalizeVertical(30),
   },
   header: {
-    marginBottom: normalizeVertical(24),
+    marginBottom: normalizeVertical(20),
     alignItems: 'center',
+    paddingHorizontal: normalize(8),
   },
   headerTitle: {
-    fontSize: normalize(28),
-    fontWeight: '800',
+    fontSize: normalize(22), // Reduced from 28
+    fontWeight: '700', // Changed from 800
     color: '#2c3e50',
-    marginBottom: normalizeVertical(8),
+    marginBottom: normalizeVertical(6),
+    textAlign: 'center',
   },
   headerSubtitle: {
-    fontSize: normalize(16),
+    fontSize: normalize(14), // Reduced from 16
     color: '#7f8c8d',
     textAlign: 'center',
     maxWidth: '90%',
+    lineHeight: normalizeVertical(20),
   },
   sectionTitle: {
-    fontSize: normalize(20),
-    fontWeight: '700',
+    fontSize: normalize(18), // Reduced from 20
+    fontWeight: '600', // Changed from 700
     color: '#2c3e50',
-    marginBottom: normalizeVertical(16),
+    marginBottom: normalizeVertical(12), // Reduced from 16
   },
   benefitsContainer: {
-    marginBottom: normalizeVertical(24),
+    marginBottom: normalizeVertical(20),
   },
   benefitsGrid: {
     flexDirection: 'row',
@@ -219,40 +226,40 @@ const styles = StyleSheet.create({
   benefitCard: {
     width: (width - normalize(48)) / 2,
     backgroundColor: '#fff',
-    borderRadius: normalize(12),
-    padding: normalize(16),
-    marginBottom: normalizeVertical(12),
+    borderRadius: normalize(10),
+    padding: normalize(12), // Reduced from 16
+    marginBottom: normalizeVertical(10), // Reduced from 12
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
+    elevation: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 3,
   },
   benefitText: {
-    fontSize: normalize(14),
-    fontWeight: '600',
+    fontSize: normalize(13), // Reduced from 14
+    fontWeight: '500', // Changed from 600
     color: '#34495e',
-    marginTop: normalizeVertical(8),
+    marginTop: normalizeVertical(6), // Reduced from 8
     textAlign: 'center',
   },
   packageItem: {
     backgroundColor: '#fff',
-    borderRadius: normalize(16),
-    padding: normalize(20),
-    marginBottom: normalizeVertical(16),
+    borderRadius: normalize(14), // Reduced from 16
+    padding: normalize(16), // Reduced from 20
+    marginBottom: normalizeVertical(14), // Reduced from 16
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
   expandedItem: {
     borderColor: '#3498db',
-    borderWidth: 2,
+    borderWidth: 1.5, // Reduced from 2
     shadowColor: '#3498db',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15, // Reduced from 0.2
+    shadowRadius: 6, // Reduced from 8
+    elevation: 4,
   },
   packageHeader: {
     flexDirection: 'row',
@@ -260,92 +267,91 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   packageIcon: {
-    width: normalize(50),
-    height: normalize(50),
+    width: normalize(44), // Reduced from 50
+    height: normalize(44), // Reduced from 50
     resizeMode: 'contain',
-    marginRight: normalize(16),
+    marginRight: normalize(14), // Reduced from 16
   },
   titleContainer: {
     flex: 1,
   },
   packageTitle: {
-    fontWeight: '700',
-    fontSize: normalize(18),
+    fontWeight: '600', // Changed from 700
+    fontSize: normalize(16), // Reduced from 18
     color: '#2c3e50',
   },
   packagePrice: {
     fontWeight: '600',
-    fontSize: normalize(16),
+    fontSize: normalize(14), // Reduced from 16
     color: '#3498db',
   },
   detailsContainer: {
-    marginTop: normalizeVertical(20),
-    paddingTop: normalizeVertical(20),
+    marginTop: normalizeVertical(16), // Reduced from 20
+    paddingTop: normalizeVertical(16), // Reduced from 20
     borderTopWidth: 1,
     borderTopColor: '#ecf0f1',
   },
   descriptionText: {
-    fontSize: normalize(15),
+    fontSize: normalize(14), // Reduced from 15
     color: '#7f8c8d',
-    marginBottom: normalizeVertical(16),
-    lineHeight: normalizeVertical(22),
+    marginBottom: normalizeVertical(14), // Reduced from 16
+    lineHeight: normalizeVertical(20), // Reduced from 22
   },
   featuresTitle: {
-    fontWeight: '700',
-    fontSize: normalize(16),
+    fontWeight: '600', // Changed from 700
+    fontSize: normalize(15), // Reduced from 16
     color: '#2c3e50',
-    marginBottom: normalizeVertical(12),
+    marginBottom: normalizeVertical(10), // Reduced from 12
   },
   featuresContainer: {
-    marginBottom: normalizeVertical(20),
+    marginBottom: normalizeVertical(16), // Reduced from 20
   },
   featureItem: {
     flexDirection: 'row',
-    marginBottom: normalizeVertical(10),
+    marginBottom: normalizeVertical(8), // Reduced from 10
   },
   featureIcon: {
-    marginRight: normalize(8),
-    marginTop: normalizeVertical(3),
+    marginRight: normalize(6), // Reduced from 8
+    marginTop: normalizeVertical(2), // Reduced from 3
   },
   featureText: {
     flex: 1,
-    fontSize: normalize(15),
+    fontSize: normalize(14), // Reduced from 15
     color: '#34495e',
   },
   selectButton: {
     backgroundColor: '#27ae60',
-    paddingVertical: normalizeVertical(14),
-    borderRadius: normalize(12),
+    paddingVertical: normalizeVertical(12), // Reduced from 14
+    borderRadius: normalize(10), // Reduced from 12
     alignItems: 'center',
-    marginTop: normalizeVertical(10),
+    marginTop: normalizeVertical(8), // Reduced from 10
   },
   selectButtonText: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: normalize(16),
+    fontWeight: '600', // Changed from 700
+    fontSize: normalize(14), // Reduced from 16
   },
   faqContainer: {
-    marginTop: normalizeVertical(8),
-    marginBottom: normalizeVertical(30),
+    marginTop: normalizeVertical(6), // Reduced from 8
+    marginBottom: normalizeVertical(24), // Reduced from 30
   },
   faqItem: {
     backgroundColor: '#fff',
-    borderRadius: normalize(12),
-    padding: normalize(16),
-    marginBottom: normalizeVertical(12),
+    borderRadius: normalize(12), // Reduced from 16
+    padding: normalize(14), // Reduced from 16
+    marginBottom: normalizeVertical(10), // Reduced from 12
   },
   faqQuestion: {
-    fontWeight: '700',
-    fontSize: normalize(16),
+    fontWeight: '600', // Changed from 700
+    fontSize: normalize(15), // Reduced from 16
     color: '#2c3e50',
-    marginBottom: normalizeVertical(8),
+    marginBottom: normalizeVertical(6), // Reduced from 8
   },
   faqAnswer: {
-    fontSize: normalize(14),
+    fontSize: normalize(13), // Reduced from 14
     color: '#7f8c8d',
-    lineHeight: normalizeVertical(20),
+    lineHeight: normalizeVertical(18), // Reduced from 20
   },
 });
-
 
 export default PackagePage;

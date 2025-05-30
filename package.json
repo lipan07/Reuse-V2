@@ -28,6 +28,7 @@
     "react-native-get-random-values": "^1.11.0",
     "react-native-google-mobile-ads": "^15.1.0",
     "react-native-image-picker": "^8.2.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "^1.22.1",
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-safe-area-context": "^5.4.0",

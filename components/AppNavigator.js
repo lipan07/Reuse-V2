@@ -115,6 +115,11 @@ const AppNavigator = () => {
           component={ProductDetails}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="PackagePage"
+          component={PackagePage}
+          options={{ headerShown: false }}
+        />
         {/* <Stack.Screen name="Login" component={Login} /> */}
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="FilterScreen" component={FilterScreen} />
@@ -131,7 +136,7 @@ const AppNavigator = () => {
         <Stack.Screen name="FollowersPage" component={FollowersPage} />
         <Stack.Screen name="MyFollowersPage" component={MyFollowersPage} />
         <Stack.Screen name="FollowingPage" component={FollowingPage} />
-        <Stack.Screen name="PackagePage" component={PackagePage} />
+        {/* <Stack.Screen name="PackagePage" component={PackagePage} /> */}
         {/* <Stack.Screen name="Settings" component={Settings} /> */}
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="CompanyDetailsPage" component={CompanyDetailsPage} />
