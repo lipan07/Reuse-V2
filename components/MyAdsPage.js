@@ -120,12 +120,16 @@ const MyAdsPage = ({ navigation }) => {
 
     return (
       <TouchableOpacity style={styles.productItem} onPress={() => showPopup(item)}>
-        {hasImage ? (
-          <Image source={{ uri: item.images[0] }} style={styles.productImage} />
+        {item.images && item.images.length > 0 ? (
+          <Image
+            source={{ uri: item.images[0] }}
+            style={styles.productImage}
+            onError={() => console.warn('Failed to load image:', item.images[0])}
+          />
         ) : (
-          <View style={styles.imageFallback}>
-            <Text style={styles.imageFallbackText}>
-              {item.category?.name || 'No Image Found'}
+          <View style={styles.imagePlaceholder}>
+            <Text style={styles.placeholderText}>
+              {item.category?.name || 'No image found'}
             </Text>
           </View>
         )}
@@ -490,21 +494,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
   },
-  imageFallback: {
+  imagePlaceholder: {
     width: 100,
     height: 100,
-    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    backgroundColor: '#eee',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
     marginRight: 10,
   },
-  imageFallbackText: {
-    fontSize: 14,
-    color: '#999',
+  placeholderText: {
+    fontSize: 12,
+    color: '#888',
     textAlign: 'center',
-    paddingHorizontal: 5,
+    paddingHorizontal: 4,
   },
+
 
 });
 
