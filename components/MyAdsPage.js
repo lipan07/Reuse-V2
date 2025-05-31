@@ -115,17 +115,29 @@ const MyAdsPage = ({ navigation }) => {
     deleteProduct();
   };
 
-  const renderProductItem = ({ item }) => (
-    <TouchableOpacity style={styles.productItem} onPress={() => showPopup(item)}>
-      <Image source={{ uri: item.images[0] }} style={styles.productImage} />
-      <View style={styles.productDetails}>
-        <Text style={styles.productName}>{item.title}</Text>
-        <Text style={styles.productDesc}>{item.post_details.description}</Text>
-        <Text style={styles.price}>Price: ${item.post_details.amount}</Text>
-      </View>
-      <Icon name="angle-right" size={24} color="#007BFF" style={styles.arrowIcon} />
-    </TouchableOpacity>
-  );
+  const renderProductItem = ({ item }) => {
+    const hasImage = item.images && item.images.length > 0 && item.images[0];
+
+    return (
+      <TouchableOpacity style={styles.productItem} onPress={() => showPopup(item)}>
+        {hasImage ? (
+          <Image source={{ uri: item.images[0] }} style={styles.productImage} />
+        ) : (
+          <View style={styles.imageFallback}>
+            <Text style={styles.imageFallbackText}>
+              {item.category?.name || 'No Image Found'}
+            </Text>
+          </View>
+        )}
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>{item.title}</Text>
+          <Text style={styles.productDesc}>{item.post_details.description}</Text>
+          <Text style={styles.price}>Price: ${item.post_details.amount}</Text>
+        </View>
+        <Icon name="angle-right" size={24} color="#007BFF" style={styles.arrowIcon} />
+      </TouchableOpacity>
+    );
+  };
 
   const renderFooter = () => {
     if (!isLoading || isRefreshing) return null;
@@ -478,6 +490,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 40,
   },
+  imageFallback: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  imageFallbackText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    paddingHorizontal: 5,
+  },
+
 });
 
 export default MyAdsPage;
