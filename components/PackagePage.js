@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, FlatList, Dimensions, StatusBar,Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { width, height } = Dimensions.get('window');
@@ -11,6 +11,7 @@ const normalizeVertical = (size) => Math.round(verticalScale * size);
 
 const PackagePage = () => {
   const [expandedId, setExpandedId] = useState(null);
+  const statusBarHeight = StatusBar.currentHeight || (Platform.OS === 'ios' ? 20 : 24);
   const packageData = [
     {
       id: '1',
@@ -124,58 +125,72 @@ const PackagePage = () => {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Seller Packages</Text>
-        <Text style={styles.headerSubtitle}>Boost your sales with specialized seller packages</Text>
-      </View>
 
-      <View style={styles.benefitsContainer}>
-        <Text style={styles.sectionTitle}>Why Upgrade?</Text>
-        <View style={styles.benefitsGrid}>
-          <View style={styles.benefitCard}>
-            <Icon name="visibility" size={normalize(20)} color="#3498db" />
-            <Text style={styles.benefitText}>Increased Visibility</Text>
-          </View>
-          <View style={styles.benefitCard}>
-            <Icon name="star" size={normalize(20)} color="#f39c12" />
-            <Text style={styles.benefitText}>Premium Badges</Text>
-          </View>
-          <View style={styles.benefitCard}>
-            <Icon name="trending-up" size={normalize(20)} color="#2ecc71" />
-            <Text style={styles.benefitText}>Higher Sales</Text>
-          </View>
-          <View style={styles.benefitCard}>
-            <Icon name="headset-mic" size={normalize(20)} color="#9b59b6" />
-            <Text style={styles.benefitText}>Priority Support</Text>
-          </View>
+    <>
+      <StatusBar backgroundColor="#007BFF" barStyle="light-content" translucent={true} />
+      {/* Blue background for status bar area */}
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: statusBarHeight,
+        backgroundColor: '#007BFF',
+        zIndex: 1,
+      }} />
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Seller Packages</Text>
+          <Text style={styles.headerSubtitle}>Boost your sales with specialized seller packages</Text>
         </View>
-      </View>
 
-      <Text style={styles.sectionTitle}>Choose Your Package</Text>
-      <FlatList
-        data={packageData}
-        renderItem={renderPackageItem}
-        keyExtractor={(item) => item.id}
-        scrollEnabled={false}
-      />
+        <View style={styles.benefitsContainer}>
+          <Text style={styles.sectionTitle}>Why Upgrade?</Text>
+          <View style={styles.benefitsGrid}>
+            <View style={styles.benefitCard}>
+              <Icon name="visibility" size={normalize(20)} color="#3498db" />
+              <Text style={styles.benefitText}>Increased Visibility</Text>
+            </View>
+            <View style={styles.benefitCard}>
+              <Icon name="star" size={normalize(20)} color="#f39c12" />
+              <Text style={styles.benefitText}>Premium Badges</Text>
+            </View>
+            <View style={styles.benefitCard}>
+              <Icon name="trending-up" size={normalize(20)} color="#2ecc71" />
+              <Text style={styles.benefitText}>Higher Sales</Text>
+            </View>
+            <View style={styles.benefitCard}>
+              <Icon name="headset-mic" size={normalize(20)} color="#9b59b6" />
+              <Text style={styles.benefitText}>Priority Support</Text>
+            </View>
+          </View>
+        </View>
 
-      <View style={styles.faqContainer}>
-        <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
-        <View style={styles.faqItem}>
-          <Text style={styles.faqQuestion}>Can I switch packages later?</Text>
-          <Text style={styles.faqAnswer}>Yes, you can upgrade or downgrade at any time. Your billing will be prorated accordingly.</Text>
+        <Text style={styles.sectionTitle}>Choose Your Package</Text>
+        <FlatList
+          data={packageData}
+          renderItem={renderPackageItem}
+          keyExtractor={(item) => item.id}
+          scrollEnabled={false}
+        />
+
+        <View style={styles.faqContainer}>
+          <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+          <View style={styles.faqItem}>
+            <Text style={styles.faqQuestion}>Can I switch packages later?</Text>
+            <Text style={styles.faqAnswer}>Yes, you can upgrade or downgrade at any time. Your billing will be prorated accordingly.</Text>
+          </View>
+          <View style={styles.faqItem}>
+            <Text style={styles.faqQuestion}>Do packages auto-renew?</Text>
+            <Text style={styles.faqAnswer}>Packages renew automatically each month. You can cancel anytime in your account settings.</Text>
+          </View>
+          <View style={styles.faqItem}>
+            <Text style={styles.faqQuestion}>What payment methods do you accept?</Text>
+            <Text style={styles.faqAnswer}>We accept all major credit cards, PayPal, and bank transfers for enterprise accounts.</Text>
+          </View>
         </View>
-        <View style={styles.faqItem}>
-          <Text style={styles.faqQuestion}>Do packages auto-renew?</Text>
-          <Text style={styles.faqAnswer}>Packages renew automatically each month. You can cancel anytime in your account settings.</Text>
-        </View>
-        <View style={styles.faqItem}>
-          <Text style={styles.faqQuestion}>What payment methods do you accept?</Text>
-          <Text style={styles.faqAnswer}>We accept all major credit cards, PayPal, and bank transfers for enterprise accounts.</Text>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 };
 
