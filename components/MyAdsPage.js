@@ -25,6 +25,7 @@ const MyAdsPage = ({ navigation }) => {
     if (isRefreshing) setIsRefreshing(true);
 
     const token = await AsyncStorage.getItem('authToken');
+    console.log(token);
     try {
       const response = await fetch(`${process.env.BASE_URL}/my-post?page=${page}`, {
         method: 'GET',

@@ -1,97 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  Platform,
-  ScrollView,
-  KeyboardAvoidingView,
-} from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Pusher from 'pusher-js/react-native';
-import { addEventListener, removeEventListener } from 'react-native-event-listeners';
-
-import {
-  BannerAd,
-  BannerAdSize,
-  TestIds,
-  AppOpenAd,
-  AdEventType,
-} from 'react-native-google-mobile-ads';
-
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : process.env.G_BANNER_AD_UNIT_ID;
-
-const pusher = new Pusher(process.env.PUSHER_KEY, {
-  cluster: process.env.PUSHER_CLUSTER,
-  encrypted: true
-});
-
+import echo from '../service/echo';
 
 const ChatBox = ({ route }) => {
   const { sellerId, buyerId, postId, chatId: existingChatId } = route.params;
   const [chatId, setChatId] = useState(existingChatId || null);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [inputText, setInputText] = useState('');
-  const [loggedInUserId, setLoggedInUserId] = useState(null);
-  const [showMessageOptions, setShowMessageOptions] = useState(false);
-  const [channel, setChannel] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [userId, setUserId] = useState(null);
+  const scrollViewRef = useRef();
 
+  console.log({
+    REVERB_APP_KEY: process.env.REVERB_APP_KEY,
+    REVERB_HOST: process.env.REVERB_HOST,
+    REVERB_PORT: process.env.REVERB_PORT,
+    BASE_URL: process.env.BASE_URL
+  });
+
+  // Initialize user and chat
   useEffect(() => {
-    if (chatId) {
-      const subscribedChannel = pusher.subscribe(`chat.${chatId}`);
-      subscribedChannel.bind('App\\Events\\MessageSent', (data) => {
-        setChatHistory(prev => [...prev, data]);
-      });
+    const initialize = async () => {
+      const user = await AsyncStorage.getItem('userId');
+      setUserId(user);
 
-      //Listening for status updates
-      subscribedChannel.bind('App\\Events\\MessageSeen', (data) => {
-        console.log('channel response - ', data);
-        updateMessageStatus(data.id);
-      });
-      setChannel(subscribedChannel);
-
-      return () => {
-        subscribedChannel.unbind_all();
-        subscribedChannel.unsubscribe();
-      };
-    }
-  }, [chatId]);
-
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const userId = await AsyncStorage.getItem('userId');
-      setLoggedInUserId(userId);
+      if (!chatId) {
+        await openChat(sellerId, buyerId, postId);
+      } else {
+        fetchMessages(chatId);
+      }
     };
-    fetchUserId();
+
+    initialize();
+
+    return () => {
+      if (chatId) {
+        echo.leave(`chat.${chatId}`);
+      }
+    };
   }, []);
 
+  // Laravel Reverb socket connection status
   useEffect(() => {
-    if (chatId) {
-      fetchChatMessages(chatId);
-    } else {
-      openChat(sellerId, buyerId, postId);
-    }
-  }, [chatId]);
-
-  const fetchChatMessages = async (id) => {
     try {
-      const token = await AsyncStorage.getItem('authToken');
-      const response = await fetch(`${process.env.BASE_URL}/chats/${id}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+      echo.connector.socket.on('reverb:connected', () => {
+        console.log('🎉 Reverb connected');
       });
-      const data = await response.json();
-      setChatHistory(data.chats);
-    } catch (error) {
-      console.error("Error fetching chat messages:", error);
+    } catch (e) {
+      console.warn('Unable to attach reverb:connected listener:', e.message);
     }
-  };
+  }, []);
+
+  // Subscribe to chat channel
+  useEffect(() => {
+    let channel;
+
+    const setupChannel = async () => {
+      if (!chatId) return;
+
+      try {
+        channel = echo.private(`chat.${chatId}`);
+
+        channel
+          .subscribed(() => {
+            console.log(`✅ Subscribed to chat.${chatId}`);
+          })
+          .listen('.MessageSent', (data) => {
+            console.log('📨 Message received:', data);
+            setMessages(prev => [...prev, data]);
+          })
+          .error((error) => {
+            console.error('❌ Subscription error:', error);
+          });
+
+      } catch (error) {
+        console.error('❌ Channel setup error:', error);
+        setTimeout(setupChannel, 1000); // Retry
+      }
+    };
+
+    setupChannel();
+
+    return () => {
+      if (channel) {
+        channel.stopListening('.MessageSent');
+        echo.leave(`chat.${chatId}`);
+      }
+    };
+  }, [chatId]);
 
   const openChat = async (sellerId, buyerId, postId) => {
     try {
@@ -99,149 +95,129 @@ const ChatBox = ({ route }) => {
       const response = await fetch(`${process.env.BASE_URL}/open-chat`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ seller_id: sellerId, buyer_id: buyerId, post_id: postId }),
       });
+
       const data = await response.json();
       setChatId(data.chat.id);
-      setChatHistory(data.messages);
+      setMessages(data.messages || []);
     } catch (error) {
-      console.error("Error opening chat:", error);
+      console.error('Error opening chat:', error);
     }
   };
 
-  const handleSend = async (message) => {
-    message = message.trim();
-    if (!message) return;
+  const fetchMessages = async (chatId) => {
     try {
       const token = await AsyncStorage.getItem('authToken');
-      const response = await fetch(`${process.env.BASE_URL}/send-message`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.BASE_URL}/chats/${chatId}`, {
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ chat_id: chatId, message: message }),
       });
+
       const data = await response.json();
-      // setChatHistory((prev) => [...prev, { message: message, user_id: loggedInUserId }]);
-      setInputText('');
-      setShowMessageOptions(false);
+      setMessages(data.chats || []);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error fetching messages:', error);
     }
   };
 
-  const handleMessageOption = (message) => {
-    if (message.trim()) {
-      handleSend(message);
-    }
-  };
+  const sendMessage = async () => {
+    if (!message.trim()) return;
 
-  const handleMessageText = () => {
-    handleSend(inputText); // Pass the input text value to handleSend
-  };
-
-  const handleFocus = () => {
-    setShowMessageOptions(true);
-  };
-
-  const handleSeeMessage = async (messageID) => {
-    const token = await AsyncStorage.getItem('authToken');
     try {
-      console.log(`${process.env.BASE_URL}/messages/${messageID}/seen`);
-      const response = await fetch(`${process.env.BASE_URL}/messages/${messageID}/seen`, {
+      const token = await AsyncStorage.getItem('authToken');
+      await fetch(`${process.env.BASE_URL}/send-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          message: message
+        }),
+      });
+
+      setMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
+
+  const markAsSeen = async (messageId) => {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      await fetch(`${process.env.BASE_URL}/messages/${messageId}/seen`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ messageID: messageID }),
       });
-
-      updateMessageStatus(messageID);
     } catch (error) {
-      console.error("Failed to mark message as seen:", error);
+      console.error('Error marking message as seen:', error);
     }
   };
 
-  const updateMessageStatus = (messageId) => {
-    console.log(`Updating message ${messageId} to seen status 1`);
-    setChatHistory(prev => {
-      const newMessages = prev.map(msg =>
-        msg.id === messageId ? { ...msg, is_seen: 1 } : msg
-      );
-      console.log('newMessages - ', newMessages);
-      return newMessages;
-    });
-  };
+  // Auto-scroll to bottom
   useEffect(() => {
-    // Function to mark messages as seen
-    const markMessagesAsSeen = async () => {
-      // Find all messages that are not marked as seen
-      const unseenMessages = chatHistory.filter(msg => msg.user_id !== loggedInUserId && msg.is_seen !== 1);
-      unseenMessages.forEach(message => {
-        handleSeeMessage(message.id);
-      });
-    };
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
 
-    markMessagesAsSeen();
-  }, [chatHistory]);
+  // Mark as seen
+  useEffect(() => {
+    messages.forEach(msg => {
+      if (!msg.is_seen && msg.user_id !== userId) {
+        markAsSeen(msg.id);
+      }
+    });
+  }, [messages]);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 100}
+      keyboardVerticalOffset={90}
     >
-
-      {/* <BannerAd unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
-
-      <ScrollView contentContainerStyle={styles.chatHistory} keyboardShouldPersistTaps='handled'>
-        {chatHistory.map((message, index) => (
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.messagesContainer}
+        contentContainerStyle={styles.messagesContent}
+      >
+        {messages.map((msg, index) => (
           <View
             key={index}
             style={[
-              styles.messageContainer,
-              message.user_id === loggedInUserId ? styles.messageRight : styles.messageLeft,
+              styles.messageBubble,
+              msg.user_id === userId ? styles.sentMessage : styles.receivedMessage,
             ]}
           >
-            <Text style={styles.messageText}>{message.message}</Text>
-            {message.user_id === loggedInUserId && <MessageTick status={message.is_seen} />}
-            {/* {message.user_id !== loggedInUserId && message.is_seen !== 1 && handleSeeMessage(message.id)} */}
+            <Text style={msg.user_id === userId ? styles.sentText : styles.receivedText}>
+              {msg.message}
+            </Text>
+            {msg.user_id === userId && (
+              <Text style={styles.statusIcon}>
+                {msg.is_seen ? '✓✓' : '✓'}
+              </Text>
+            )}
           </View>
         ))}
       </ScrollView>
 
-      {showMessageOptions && (
-        <View style={styles.messageOptionsContainer}>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('Is it available?')}>
-            <Text style={styles.messageOptionText}>Is it available?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('What is the last price?')}>
-            <Text style={styles.messageOptionText}>What is the last price?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('Is it negotiable?')}>
-            <Text style={styles.messageOptionText}>Is it negotiable?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('Your phone number?')}>
-            <Text style={styles.messageOptionText}>Your phone number?</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      <View style={[styles.footer, Platform.OS === 'ios' && { marginBottom: 20 }]}>
+      <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          value={inputText}
-          onFocus={handleFocus}
-          onChangeText={setInputText}
+          value={message}
+          onChangeText={setMessage}
           placeholder="Type a message..."
+          onSubmitEditing={sendMessage}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleMessageText}>
+        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
       </View>
@@ -249,88 +225,71 @@ const ChatBox = ({ route }) => {
   );
 };
 
-const MessageTick = ({ status }) => {
-  switch (status) {
-    // case 1:
-    //   return <Text style={styles.tickText}>✔✔</Text>;
-    case 1:
-      return <Text style={styles.tickTextBlue}>✔✔</Text>;
-    default:
-      return <Text style={styles.tickText}>✔</Text>;
-  }
-};
-
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  chatHistory: { padding: 20 },
-  messageContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  messagesContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
+  },
+  messagesContent: {
+    paddingBottom: 20,
+  },
+  messageBubble: {
     maxWidth: '80%',
-    padding: 10,
-    borderRadius: 10,
+    borderRadius: 15,
+    padding: 12,
     marginVertical: 5,
   },
-  messageLeft: {
-    backgroundColor: '#89bed6',
-    alignSelf: 'flex-start',
-  },
-  messageRight: {
-    backgroundColor: '#007AFF',
+  sentMessage: {
     alignSelf: 'flex-end',
+    backgroundColor: '#007AFF',
+    borderBottomRightRadius: 0,
   },
-  messageText: {
-    color: '#fff',
+  receivedMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#e5e5ea',
+    borderBottomLeftRadius: 0,
   },
-  messageOptionsContainer: {
+  sentText: {
+    color: 'white',
+  },
+  receivedText: {
+    color: 'black',
+  },
+  statusIcon: {
+    fontSize: 12,
+    color: 'white',
+    alignSelf: 'flex-end',
+    marginTop: 2,
+  },
+  inputContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-    backgroundColor: '#f1f1f1',
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-  },
-  messageOption: {
-    backgroundColor: '#e1e1e1',
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    margin: 5,
-    width: '45%',
-    alignItems: 'center',
-  },
-  messageOptionText: {
-    color: '#007AFF',
-    fontSize: 14,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    padding: 10,
+    backgroundColor: 'white',
     borderTopWidth: 1,
     borderColor: '#ddd',
-    backgroundColor: '#f8f9fa',
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderColor: '#ddd',
     borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     marginRight: 10,
-    backgroundColor: '#fff',
   },
   sendButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     backgroundColor: '#007AFF',
     borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   sendButtonText: {
-    color: '#fff',
+    color: 'white',
     fontWeight: 'bold',
   },
 });
