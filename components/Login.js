@@ -137,7 +137,10 @@ const Login = () => {
             body: JSON.stringify({ phoneNumber: `${phoneNumber}`, otp }),
          });
          const data = await response.json();
+         console.log('login user data:');
          console.log(data);
+         console.log('user id');
+         console.log(data.user.id.toString());
 
          if (response.ok) {
             await AsyncStorage.multiSet([

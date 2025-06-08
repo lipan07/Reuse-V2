@@ -12,6 +12,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Pusher from 'pusher-js/react-native';
 import { addEventListener, removeEventListener } from 'react-native-event-listeners';
+import { createEcho } from '../service/echo';
 
 import {
   BannerAd,
@@ -39,29 +40,57 @@ const ChatBox = ({ route }) => {
   const [channel, setChannel] = useState(null);
 
   useEffect(() => {
-    if (chatId) {
-      const subscribedChannel = pusher.subscribe(`chat.${chatId}`);
-      subscribedChannel.bind('App\\Events\\MessageSent', (data) => {
-        setChatHistory(prev => [...prev, data]);
-      });
+    let echoInstance;
+    let channelInstance;
 
-      //Listening for status updates
-      subscribedChannel.bind('App\\Events\\MessageSeen', (data) => {
-        console.log('channel response - ', data);
-        updateMessageStatus(data.id);
-      });
-      setChannel(subscribedChannel);
+    const setupEcho = async () => {
 
-      return () => {
-        subscribedChannel.unbind_all();
-        subscribedChannel.unsubscribe();
-      };
-    }
-  }, [chatId]);
+      const userId = await AsyncStorage.getItem('userId');
+      if (!chatId || !userId) {
+        console.log('Echo setup skipped: missing chatId or loggedInUserId', { chatId, userId });
+        return;
+      }
+
+      try {
+        echoInstance = await createEcho();
+        console.log('Echo instance created:', echoInstance);
+
+        channelInstance = echoInstance.private(`chat.${chatId}`);
+        setChannel(channelInstance);
+        console.log(`Subscribed to channel: chat.${chatId}`);
+
+        channelInstance.listen('.App\\Events\\MessageSent', (data) => {
+          console.log('Received MessageSent event:', data);
+          setChatHistory(prev => [...prev, data.message]);
+        });
+
+        channelInstance.listen('.App\\Events\\MessageSeen', (data) => {
+          console.log('Received MessageSeen event:', data);
+          updateMessageStatus(data.id);
+        });
+
+        channelInstance.error((error) => {
+          console.log('Channel error:', error);
+        });
+      } catch (err) {
+        console.log('Error setting up Echo:', err);
+      }
+    };
+
+    setupEcho();
+
+    return () => {
+      if (echoInstance && channelInstance) {
+        echoInstance.leave(`chat.${chatId}`);
+        console.log(`Left channel: chat.${chatId}`);
+      }
+    };
+  }, [chatId, loggedInUserId]);
 
   useEffect(() => {
     const fetchUserId = async () => {
       const userId = await AsyncStorage.getItem('userId');
+      console.log('Fetched logged in user ID:', userId);
       setLoggedInUserId(userId);
     };
     fetchUserId();
@@ -118,6 +147,7 @@ const ChatBox = ({ route }) => {
     if (!message) return;
     try {
       const token = await AsyncStorage.getItem('authToken');
+      console.log('Sending message:', message, 'to chat:', chatId);
       const response = await fetch(`${process.env.BASE_URL}/send-message`, {
         method: 'POST',
         headers: {
@@ -128,7 +158,7 @@ const ChatBox = ({ route }) => {
         body: JSON.stringify({ chat_id: chatId, message: message }),
       });
       const data = await response.json();
-      // setChatHistory((prev) => [...prev, { message: message, user_id: loggedInUserId }]);
+      console.log('Send message response:', data);
       setInputText('');
       setShowMessageOptions(false);
     } catch (error) {
