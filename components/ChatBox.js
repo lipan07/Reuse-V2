@@ -55,12 +55,13 @@ const ChatBox = ({ route }) => {
         echoInstance = await createEcho();
         console.log('Echo instance created:', echoInstance);
 
-        channelInstance = echoInstance.private(`chat.${chatId}`);
+        channelInstance = echoInstance.channel(`chat.${chatId}`);
         setChannel(channelInstance);
         console.log(`Subscribed to channel: chat.${chatId}`);
 
-        channelInstance.listen('.App\\Events\\MessageSent', (data) => {
+        channelInstance.listen('.MessageSent', (data) => {
           console.log('Received MessageSent event:', data);
+          console.log('Chat history:', chatHistory);
           setChatHistory(prev => [...prev, data.message]);
         });
 
@@ -116,6 +117,7 @@ const ChatBox = ({ route }) => {
         },
       });
       const data = await response.json();
+      console.log('Fetched chat messages:', data);
       setChatHistory(data.chats);
     } catch (error) {
       console.error("Error fetching chat messages:", error);
