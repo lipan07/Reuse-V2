@@ -1,7 +1,7 @@
-// service/echo.js
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { REVERB_APP_KEY, REVERB_HOST, REVERB_CLUSTER, REVERB_PORT, REVERB_SCHEME } from '@env';
 
 window.Pusher = Pusher;
 
@@ -10,15 +10,15 @@ export const createEcho = async () => {
 
   return new Echo({
     broadcaster: 'reverb',
-    key: 'hfp2qfd7f31x7jft19r4',
-    cluster: 'mt1', 
-    wsHost: 'big-brain.co.in',
-    wsPort: 8080,
-    wssPort: 8080,
-    forceTLS: false,
+    key: REVERB_APP_KEY,
+    cluster: REVERB_CLUSTER,
+    wsHost: REVERB_HOST,
+    wsPort: Number(REVERB_PORT),
+    wssPort: Number(REVERB_PORT),
+    forceTLS: REVERB_SCHEME === 'https',
     disableStats: true,
     enabledTransports: ['ws', 'wss'],
-    authEndpoint: 'https://big-brain.co.in/broadcasting/auth',
+    authEndpoint: `https://${REVERB_HOST}/broadcasting/auth`,
     auth: {
       headers: {
         Authorization: `Bearer ${token}`

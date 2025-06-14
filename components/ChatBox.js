@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -36,8 +36,14 @@ const ChatBox = ({ route }) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loggedInUserId, setLoggedInUserId] = useState(null);
-  const [showMessageOptions, setShowMessageOptions] = useState(false);
   const [channel, setChannel] = useState(null);
+  const scrollViewRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [chatHistory]);
 
   useEffect(() => {
     let echoInstance;
@@ -65,7 +71,7 @@ const ChatBox = ({ route }) => {
           setChatHistory(prev => [...prev, data]);
         });
 
-        channelInstance.listen('.App\\Events\\MessageSeen', (data) => {
+        channelInstance.listen('.MessageSeen', (data) => {
           console.log('Received MessageSeen event:', data);
           updateMessageStatus(data.id);
         });
@@ -121,8 +127,8 @@ const ChatBox = ({ route }) => {
       console.log('Fetched chat messages:', data);
 
       // Set messages if available
-        setChatHistory(data.chats);
-      
+      setChatHistory(data.chats);
+
 
     } catch (error) {
       console.error("Error fetching chat messages:", error);
@@ -168,7 +174,6 @@ const ChatBox = ({ route }) => {
       const data = await response.json();
       console.log('Send message response:', data);
       setInputText('');
-      setShowMessageOptions(false);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -182,10 +187,6 @@ const ChatBox = ({ route }) => {
 
   const handleMessageText = () => {
     handleSend(inputText); // Pass the input text value to handleSend
-  };
-
-  const handleFocus = () => {
-    setShowMessageOptions(true);
   };
 
   const handleSeeMessage = async (messageID) => {
@@ -238,7 +239,9 @@ const ChatBox = ({ route }) => {
 
       {/* <BannerAd unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
 
-      <ScrollView contentContainerStyle={styles.chatHistory} keyboardShouldPersistTaps='handled'>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.chatHistory} keyboardShouldPersistTaps='handled'>
         {chatHistory.map((message, index) => (
           <View
             key={index}
@@ -254,28 +257,10 @@ const ChatBox = ({ route }) => {
         ))}
       </ScrollView>
 
-      {showMessageOptions && (
-        <View style={styles.messageOptionsContainer}>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('Is it available?')}>
-            <Text style={styles.messageOptionText}>Is it available?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('What is the last price?')}>
-            <Text style={styles.messageOptionText}>What is the last price?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('Is it negotiable?')}>
-            <Text style={styles.messageOptionText}>Is it negotiable?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageOption} onPress={() => handleMessageOption('Your phone number?')}>
-            <Text style={styles.messageOptionText}>Your phone number?</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
       <View style={[styles.footer, Platform.OS === 'ios' && { marginBottom: 20 }]}>
         <TextInput
           style={styles.input}
           value={inputText}
-          onFocus={handleFocus}
           onChangeText={setInputText}
           placeholder="Type a message..."
         />
@@ -289,8 +274,6 @@ const ChatBox = ({ route }) => {
 
 const MessageTick = ({ status }) => {
   switch (status) {
-    // case 1:
-    //   return <Text style={styles.tickText}>✔✔</Text>;
     case 1:
       return <Text style={styles.tickTextBlue}>✔✔</Text>;
     default:
@@ -318,52 +301,32 @@ const styles = StyleSheet.create({
   messageText: {
     color: '#fff',
   },
-  messageOptionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-    backgroundColor: '#f1f1f1',
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-  },
-  messageOption: {
-    backgroundColor: '#e1e1e1',
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    margin: 5,
-    width: '45%',
-    alignItems: 'center',
-  },
-  messageOptionText: {
-    color: '#007AFF',
-    fontSize: 14,
-  },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 14, // increased padding
+    paddingHorizontal: 14, // increased padding
     borderTopWidth: 1,
     borderColor: '#ddd',
     backgroundColor: '#f8f9fa',
+    marginBottom: 16, // add margin to lift it up
   },
   input: {
     flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14, // increased height
+    borderRadius: 24,
+    marginRight: 12,
     backgroundColor: '#fff',
+    fontSize: 16, // slightly larger text
   },
   sendButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
     backgroundColor: '#007AFF',
-    borderRadius: 20,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
