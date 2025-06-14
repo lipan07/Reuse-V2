@@ -279,6 +279,8 @@ const ProductDetails = () => {
         }
     };
 
+    const handleReportButton = () => setShowReportModal(true);
+
     return (
         <>
             <StatusBar backgroundColor="#007BFF" barStyle="light-content" translucent={true} />
@@ -367,27 +369,6 @@ const ProductDetails = () => {
                         </View>
                     </View>
 
-
-                    {/* Report Link */}
-                    {buyerId !== product.user?.id && (
-                        <>
-                            <View style={{ alignItems: 'flex-end', marginTop: 8, marginRight: 16 }}>
-                                <TouchableOpacity onPress={() => setShowReportModal(true)}>
-                                    <Text style={{ color: '#e74c3c', fontWeight: '600', textDecorationLine: 'underline', fontSize: 14 }}>
-                                        Report this post:
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <ReportPostModal
-                                visible={showReportModal}
-                                onClose={() => setShowReportModal(false)}
-                                onSubmit={handleReportSubmit}
-                                postId={product.id}
-                            />
-                        </>
-                    )}
-
                     {/* Map with Address Overlay */}
                     <View style={styles.mapContainer}>
                         <MapView
@@ -412,6 +393,30 @@ const ProductDetails = () => {
                             </Text>
                         </View>
                     </View>
+
+
+                    {/* Report Link */}
+                    {buyerId !== product.user?.id && (
+                        <>
+                            <View style={styles.reportLinkContainer}>
+                                <TouchableOpacity
+                                    style={styles.reportButton}
+                                    onPress={handleReportButton}
+                                    activeOpacity={0.85}
+                                >
+                                    <Icon name="alert-circle-outline" size={18} color="red" style={{ marginRight: 8 }} />
+                                    <Text style={styles.reportButtonText}>Report this post</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <ReportPostModal
+                                visible={showReportModal}
+                                onClose={() => setShowReportModal(false)}
+                                onSubmit={handleReportSubmit}
+                                postId={product.id}
+                            />
+                        </>
+                    )}
                 </ScrollView>
 
                 {/* Chat/Call Buttons */}

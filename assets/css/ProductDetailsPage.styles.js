@@ -31,9 +31,18 @@ const styles = StyleSheet.create({
         height: verticalScale(180),
         marginHorizontal: scale(16),
         marginVertical: verticalScale(8),
+        backgroundColor: '#fff',
+        borderRadius: scale(8),
+        overflow: 'hidden', // Ensures the map corners are rounded
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: verticalScale(2) },
+        shadowOpacity: 0.1,
+        shadowRadius: scale(4),
+        elevation: 2,
     },
     map: {
         ...StyleSheet.absoluteFillObject,
+        borderRadius: scale(8), // Not strictly needed with overflow: 'hidden', but safe
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -220,6 +229,31 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
         paddingHorizontal: 16,
+    },
+
+    reportLinkContainer: {
+        alignItems: 'flex-end',
+        marginTop: 8,
+        marginRight: 16,
+    },
+    reportButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        paddingVertical: 8,
+        paddingHorizontal: 18,
+        borderRadius: 22,
+        shadowColor: 'red',
+        shadowOpacity: 0.18,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 2,
+    },
+    reportButtonText: {
+        color: 'red',
+        fontWeight: 'bold',
+        fontSize: 15,
+        letterSpacing: 0.2,
     },
 
 });
