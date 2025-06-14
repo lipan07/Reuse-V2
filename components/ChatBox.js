@@ -62,7 +62,7 @@ const ChatBox = ({ route }) => {
         channelInstance.listen('.MessageSent', (data) => {
           console.log('Received MessageSent event:', data);
           console.log('Chat history:', chatHistory);
-          setChatHistory(prev => [...prev, data.message]);
+          setChatHistory(prev => [...prev, data]);
         });
 
         channelInstance.listen('.App\\Events\\MessageSeen', (data) => {
@@ -116,13 +116,19 @@ const ChatBox = ({ route }) => {
           'Authorization': `Bearer ${token}`,
         },
       });
+
       const data = await response.json();
       console.log('Fetched chat messages:', data);
-      setChatHistory(data.chats);
+
+      // Set messages if available
+        setChatHistory(data.chats);
+      
+
     } catch (error) {
       console.error("Error fetching chat messages:", error);
     }
   };
+
 
   const openChat = async (sellerId, buyerId, postId) => {
     try {
