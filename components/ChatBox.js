@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Pusher from 'pusher-js/react-native';
+import moment from 'moment';
 import { addEventListener, removeEventListener } from 'react-native-event-listeners';
 import { createEcho } from '../service/echo';
 
@@ -251,8 +252,12 @@ const ChatBox = ({ route }) => {
             ]}
           >
             <Text style={styles.messageText}>{message.message}</Text>
-            {message.user_id === loggedInUserId && <MessageTick status={message.is_seen} />}
-            {/* {message.user_id !== loggedInUserId && message.is_seen !== 1 && handleSeeMessage(message.id)} */}
+            <View style={styles.timeTickRow}>
+              <Text style={styles.timeText}>
+                {message.created_at ? moment(message.created_at).format('hh:mm A') : ''}
+              </Text>
+              {message.user_id === loggedInUserId && <MessageTick status={message.is_seen} />}
+            </View>
           </View>
         ))}
       </ScrollView>
@@ -282,7 +287,10 @@ const MessageTick = ({ status }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {
+    flex: 1,
+    backgroundColor: '#e9f0f7',
+  },
   chatHistory: { padding: 20 },
   messageContainer: {
     maxWidth: '80%',
@@ -297,9 +305,6 @@ const styles = StyleSheet.create({
   messageRight: {
     backgroundColor: '#007AFF',
     alignSelf: 'flex-end',
-  },
-  messageText: {
-    color: '#fff',
   },
   footer: {
     flexDirection: 'row',
@@ -333,6 +338,29 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  messageText: {
+    color: '#fff',
+    fontSize: 17, // make message text bigger
+  },
+  timeText: {
+    color: '#eee',
+    fontSize: 11, // make time smaller
+    marginRight: 4,
+  },
+  tickText: {
+    color: '#eee',
+    fontSize: 11, // make tick smaller
+  },
+  tickTextBlue: {
+    color: '#4fc3f7',
+    fontSize: 11, // make tick smaller
+  },
+  timeTickRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4, // space between message and time/tick
+    marginLeft: 2,
   },
 });
 
