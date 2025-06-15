@@ -3,6 +3,8 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions, Activit
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BottomNavBar from './BottomNavBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+import { createEcho } from '../service/echo';
 
 const { width, height } = Dimensions.get('window');
 const scale = width / 375;
@@ -15,6 +17,67 @@ const ChatList = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
+
+  useEffect(() => {
+    let echoInstance;
+    let channelInstances = [];
+
+    const setupEcho = async () => {
+      echoInstance = await createEcho();
+
+      // Subscribe to all chat channels in the list
+      chats.forEach(chat => {
+        const channel = echoInstance.channel(`chat.${chat.id}`);
+
+        // Listen for new messages
+        channel.listen('.MessageSent', (data) => {
+          console.log('last message data:', data);
+          setChats(prevChats =>
+            prevChats.map(c =>
+              c.id === chat.id
+                ? {
+                  ...c,
+                  last_message: data,
+                }
+                : c
+            )
+          );
+        });
+
+        // Listen for seen updates
+        channel.listen('.MessageSeen', (data) => {
+          setChats(prevChats =>
+            prevChats.map(c =>
+              c.id === chat.id && c.last_message?.id === data.id
+                ? {
+                  ...c,
+                  last_message: {
+                    ...c.last_message,
+                    is_seen: 1,
+                  },
+                }
+                : c
+            )
+          );
+        });
+
+        channelInstances.push(channel);
+      });
+    };
+
+    if (chats.length > 0) {
+      setupEcho();
+    }
+
+    return () => {
+      // Leave all channels on unmount
+      if (echoInstance && channelInstances.length) {
+        channelInstances.forEach((channel, idx) => {
+          echoInstance.leave(`chat.${chats[idx].id}`);
+        });
+      }
+    };
+  }, [chats]);
   useEffect(() => {
     getAllChat();
   }, []);
@@ -35,7 +98,7 @@ const ChatList = ({ navigation }) => {
       if (!response.ok) throw new Error('Failed to fetch');
 
       const data = await response.json();
-      setChats(data.chats);
+      setChats(data.data);
     } catch (error) {
       console.error("Error fetching chats:", error);
       setIsError(true);
@@ -54,45 +117,111 @@ const ChatList = ({ navigation }) => {
       />
     );
   };
+  const formatTimeAgo = (utcDate) => {
+    const localTime = moment.utc(utcDate).local(); // Convert to local
+    const now = moment();
 
+    const diffMins = now.diff(localTime, 'minutes');
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = now.diff(localTime, 'hours');
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = now.diff(localTime, 'days');
+    return `${diffDays}d ago`;
+  };
 
-  const renderChatItem = ({ item: chat }) => (
-    <TouchableOpacity
-      style={styles.chatCard}
-      onPress={() => navigation.navigate('ChatBox', {
-        chatId: chat.id,
-        sellerId: chat.seller_id,
-        buyerId: chat.buyer_id,
-        postId: chat.post_id,
-      })}
-    >
-      <View style={styles.avatarContainer}>
-        <Image
-          source={{ uri: chat.buyer.profile_image || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
-          style={styles.avatar}
-        />
-      </View>
+  const renderChatItem = ({ item: chat }) => {
+    const postImage =
+      chat.post?.image?.url ||
+      'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
 
-      <View style={styles.chatContent}>
-        <View style={styles.chatHeader}>
-          <Text style={styles.chatTitle} numberOfLines={1}>{chat.post.title}</Text>
-          <Text style={styles.chatTime}>2h ago</Text>
+    const isSeen = chat.last_message?.is_seen === 1;
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.chatCard,
+          !isSeen && styles.highlightedCard // highlight if not seen
+        ]}
+        onPress={() => navigation.navigate('ChatBox', {
+          chatId: chat.id,
+          sellerId: chat.seller_id,
+          buyerId: chat.buyer_id,
+          postId: chat.post_id,
+        })}
+      >
+        <View style={styles.avatarContainer}>
+          <Image
+            source={{ uri: postImage }}
+            style={styles.avatar}
+          />
         </View>
 
-        <View style={styles.chatDetails}>
-          <MaterialIcons name="person" size={normalize(14)} color="#666" />
-          <Text style={styles.chatUser} numberOfLines={1}>{chat.buyer.name}</Text>
+        <View style={styles.chatContent}>
+          <View style={styles.chatHeader}>
+            <Text
+              style={[
+                styles.chatTitle,
+                isSeen ? styles.dimmedText : styles.highlightedText
+              ]}
+              numberOfLines={1}
+            >
+              {chat.post.title}
+            </Text>
+            <Text
+              style={[
+                styles.chatTime,
+                isSeen ? styles.dimmedText : styles.highlightedText
+              ]}
+            >
+              {chat.last_message?.created_at
+                ? formatTimeAgo(chat.last_message.created_at)
+                : ''}
+            </Text>
+          </View>
+
+          {chat.last_message?.message && (
+            <View style={styles.chatDetails}>
+              <MaterialIcons name="chat" size={normalize(14)} color={isSeen ? "#b0b0b0" : "#666"} />
+              <Text
+                style={[
+                  styles.chatUser,
+                  isSeen ? styles.dimmedText : styles.highlightedText
+                ]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {chat.last_message.message}
+              </Text>
+              {typeof chat.last_message.is_seen !== 'undefined' && (
+                <MaterialIcons
+                  name={chat.last_message.is_seen ? 'done-all' : 'done'}
+                  size={normalize(14)}
+                  color={chat.last_message.is_seen ? '#4fc3f7' : '#999'}
+                  style={{ marginLeft: 4 }}
+                />
+              )}
+            </View>
+          )}
+
+          <View style={styles.chatDetails}>
+            <MaterialIcons name="person" size={normalize(14)} color={isSeen ? "#b0b0b0" : "#666"} />
+            <Text
+              style={[
+                styles.chatUser,
+                isSeen ? styles.dimmedText : styles.highlightedText
+              ]}
+              numberOfLines={1}
+            >
+              {chat.buyer.name}
+            </Text>
+          </View>
         </View>
 
-        <View style={styles.chatDetails}>
-          <MaterialIcons name="location-on" size={normalize(14)} color="#666" />
-          <Text style={styles.chatLocation} numberOfLines={1}>{chat.post.address}</Text>
-        </View>
-      </View>
-
-      <MaterialIcons name="chevron-right" size={normalize(20)} color="#999" />
-    </TouchableOpacity>
-  );
+        <MaterialIcons name="chevron-right" size={normalize(20)} color={isSeen ? "#b0b0b0" : "#999"} />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -159,9 +288,11 @@ const styles = StyleSheet.create({
     marginRight: normalize(12),
   },
   avatar: {
-    width: normalize(40),
-    height: normalize(40),
-    borderRadius: normalize(20),
+    width: normalize(72),      // increased from 48
+    height: normalize(72),     // increased from 48
+    borderRadius: normalize(10), // slightly more rounding for a modern card look
+    backgroundColor: '#f0f0f0',
+    resizeMode: 'cover',
   },
   chatContent: {
     flex: 1,
@@ -232,6 +363,16 @@ const styles = StyleSheet.create({
   },
   loadingIndicator: {
     marginVertical: normalizeVertical(20),
+  },
+  highlightedCard: {
+    // backgroundColor: '#FFF8E1', // light yellow for unread
+  },
+  dimmedText: {
+    color: '#b0b0b0',
+  },
+  highlightedText: {
+    color: '#2D3436',
+    fontWeight: 'bold',
   },
 });
 

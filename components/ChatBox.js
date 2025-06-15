@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Pusher from 'pusher-js/react-native';
 import moment from 'moment';
 import { addEventListener, removeEventListener } from 'react-native-event-listeners';
 import { createEcho } from '../service/echo';
@@ -24,12 +23,6 @@ import {
 } from 'react-native-google-mobile-ads';
 
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : process.env.G_BANNER_AD_UNIT_ID;
-
-const pusher = new Pusher(process.env.PUSHER_KEY, {
-  cluster: process.env.PUSHER_CLUSTER,
-  encrypted: true
-});
-
 
 const ChatBox = ({ route }) => {
   const { sellerId, buyerId, postId, chatId: existingChatId } = route.params;
@@ -67,9 +60,13 @@ const ChatBox = ({ route }) => {
         console.log(`Subscribed to channel: chat.${chatId}`);
 
         channelInstance.listen('.MessageSent', (data) => {
-          console.log('Received MessageSent event:', data);
-          console.log('Chat history:', chatHistory);
-          setChatHistory(prev => [...prev, data]);
+          setChatHistory(prev => {
+            // Check if the message already exists by its unique id
+            if (prev.some(msg => msg.id === data.id)) {
+              return prev; // Don't add duplicate
+            }
+            return [...prev, data];
+          });
         });
 
         channelInstance.listen('.MessageSeen', (data) => {
@@ -254,8 +251,11 @@ const ChatBox = ({ route }) => {
             <Text style={styles.messageText}>{message.message}</Text>
             <View style={styles.timeTickRow}>
               <Text style={styles.timeText}>
-                {message.created_at ? moment(message.created_at).format('hh:mm A') : ''}
+                {message.created_at
+                  ? moment.utc(message.created_at).local().format('hh:mm A')
+                  : ''}
               </Text>
+
               {message.user_id === loggedInUserId && <MessageTick status={message.is_seen} />}
             </View>
           </View>
