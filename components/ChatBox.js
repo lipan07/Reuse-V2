@@ -228,6 +228,19 @@ const ChatBox = ({ route }) => {
 
     markMessagesAsSeen();
   }, [chatHistory]);
+
+  const groupMessagesByDate = (messages) => {
+    return messages.reduce((groups, message) => {
+      const date = moment.utc(message.created_at).local().format('YYYY-MM-DD');
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(message);
+      return groups;
+    }, {});
+  };
+
+  const grouped = groupMessagesByDate(chatHistory);
+  const sortedDates = Object.keys(grouped).sort((a, b) => moment(a).diff(moment(b)));
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -239,25 +252,40 @@ const ChatBox = ({ route }) => {
 
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={styles.chatHistory} keyboardShouldPersistTaps='handled'>
-        {chatHistory.map((message, index) => (
-          <View
-            key={index}
-            style={[
-              styles.messageContainer,
-              message.user_id === loggedInUserId ? styles.messageRight : styles.messageLeft,
-            ]}
-          >
-            <Text style={styles.messageText}>{message.message}</Text>
-            <View style={styles.timeTickRow}>
-              <Text style={styles.timeText}>
-                {message.created_at
-                  ? moment.utc(message.created_at).local().format('hh:mm A')
-                  : ''}
+        contentContainerStyle={styles.chatHistory}
+        keyboardShouldPersistTaps='handled'
+      >
+        {sortedDates.map(date => (
+          <View key={date}>
+            <View style={styles.dateSeparatorContainer}>
+              <Text style={styles.dateSeparatorText}>
+                {moment(date).calendar(null, {
+                  sameDay: '[Today]',
+                  lastDay: '[Yesterday]',
+                  lastWeek: 'dddd',
+                  sameElse: 'MMM D, YYYY'
+                })}
               </Text>
-
-              {message.user_id === loggedInUserId && <MessageTick status={message.is_seen} />}
             </View>
+            {grouped[date].map((message, index) => (
+              <View
+                key={message.id || index}
+                style={[
+                  styles.messageContainer,
+                  message.user_id === loggedInUserId ? styles.messageRight : styles.messageLeft,
+                ]}
+              >
+                <Text style={styles.messageText}>{message.message}</Text>
+                <View style={styles.timeTickRow}>
+                  <Text style={styles.timeText}>
+                    {message.created_at
+                      ? moment.utc(message.created_at).local().format('hh:mm A')
+                      : ''}
+                  </Text>
+                  {message.user_id === loggedInUserId && <MessageTick status={message.is_seen} />}
+                </View>
+              </View>
+            ))}
           </View>
         ))}
       </ScrollView>
@@ -361,6 +389,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 4, // space between message and time/tick
     marginLeft: 2,
+  },
+  dateSeparatorContainer: {
+    alignItems: 'center',
+    marginVertical: 12,
+  },
+  dateSeparatorText: {
+    backgroundColor: '#dbeafe',
+    color: '#333',
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderRadius: 12,
+    fontSize: 13,
+    fontWeight: 'bold',
+    overflow: 'hidden',
   },
 });
 

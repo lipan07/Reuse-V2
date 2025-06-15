@@ -16,7 +16,11 @@ const ChatList = ({ navigation }) => {
   const [chats, setChats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
 
+  useEffect(() => {
+    AsyncStorage.getItem('userId').then(setLoggedInUserId);
+  }, []);
 
   useEffect(() => {
     let echoInstance;
@@ -117,6 +121,7 @@ const ChatList = ({ navigation }) => {
       />
     );
   };
+
   const formatTimeAgo = (utcDate) => {
     const localTime = moment.utc(utcDate).local(); // Convert to local
     const now = moment();
@@ -130,18 +135,19 @@ const ChatList = ({ navigation }) => {
     return `${diffDays}d ago`;
   };
 
-  const renderChatItem = ({ item: chat }) => {
+  const renderChatItem = async ({ item: chat }) => {
     const postImage =
       chat.post?.image?.url ||
       'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
 
     const isSeen = chat.last_message?.is_seen === 1;
+    const isFromOtherUser = chat.last_message?.user_id !== loggedInUserId;
 
     return (
       <TouchableOpacity
         style={[
           styles.chatCard,
-          !isSeen && styles.highlightedCard // highlight if not seen
+          !isSeen && isFromOtherUser && styles.highlightedCard // highlight if not seen
         ]}
         onPress={() => navigation.navigate('ChatBox', {
           chatId: chat.id,
@@ -162,7 +168,7 @@ const ChatList = ({ navigation }) => {
             <Text
               style={[
                 styles.chatTitle,
-                isSeen ? styles.dimmedText : styles.highlightedText
+                isSeen || !isFromOtherUser ? styles.dimmedText : styles.highlightedText
               ]}
               numberOfLines={1}
             >
@@ -171,7 +177,7 @@ const ChatList = ({ navigation }) => {
             <Text
               style={[
                 styles.chatTime,
-                isSeen ? styles.dimmedText : styles.highlightedText
+                isSeen || !isFromOtherUser ? styles.dimmedText : styles.highlightedText
               ]}
             >
               {chat.last_message?.created_at
@@ -182,11 +188,11 @@ const ChatList = ({ navigation }) => {
 
           {chat.last_message?.message && (
             <View style={styles.chatDetails}>
-              <MaterialIcons name="chat" size={normalize(14)} color={isSeen ? "#b0b0b0" : "#666"} />
+              <MaterialIcons name="chat" size={normalize(14)} color={isSeen || !isFromOtherUser ? "#b0b0b0" : "#666"} />
               <Text
                 style={[
                   styles.chatUser,
-                  isSeen ? styles.dimmedText : styles.highlightedText
+                  isSeen || !isFromOtherUser ? styles.dimmedText : styles.highlightedText
                 ]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
@@ -205,11 +211,11 @@ const ChatList = ({ navigation }) => {
           )}
 
           <View style={styles.chatDetails}>
-            <MaterialIcons name="person" size={normalize(14)} color={isSeen ? "#b0b0b0" : "#666"} />
+            <MaterialIcons name="person" size={normalize(14)} color={isSeen || !isFromOtherUser ? "#b0b0b0" : "#666"} />
             <Text
               style={[
                 styles.chatUser,
-                isSeen ? styles.dimmedText : styles.highlightedText
+                isSeen || !isFromOtherUser ? styles.dimmedText : styles.highlightedText
               ]}
               numberOfLines={1}
             >
@@ -218,7 +224,7 @@ const ChatList = ({ navigation }) => {
           </View>
         </View>
 
-        <MaterialIcons name="chevron-right" size={normalize(20)} color={isSeen ? "#b0b0b0" : "#999"} />
+        <MaterialIcons name="chevron-right" size={normalize(20)} color={isSeen || !isFromOtherUser ? "#b0b0b0" : "#999"} />
       </TouchableOpacity>
     );
   };
