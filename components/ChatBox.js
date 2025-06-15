@@ -8,11 +8,14 @@ import {
   Platform,
   ScrollView,
   KeyboardAvoidingView,
+  Image
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import { addEventListener, removeEventListener } from 'react-native-event-listeners';
 import { createEcho } from '../service/echo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {
   BannerAd,
@@ -25,7 +28,8 @@ import {
 const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : process.env.G_BANNER_AD_UNIT_ID;
 
 const ChatBox = ({ route }) => {
-  const { sellerId, buyerId, postId, chatId: existingChatId } = route.params;
+  const navigation = useNavigation();
+  const { sellerId, buyerId, postId, chatId: existingChatId, postTitle, postImage } = route.params;
   const [chatId, setChatId] = useState(existingChatId || null);
   const [chatHistory, setChatHistory] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -247,6 +251,25 @@ const ChatBox = ({ route }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 100}
     >
+      <View>
+        <TouchableOpacity
+          style={styles.headerContainer}
+          activeOpacity={0.8}
+          onPress={() => {
+            // Navigate to ProductDetails and pass the postId
+            navigation.navigate('ProductDetails', {
+              productDetails: { id: postId }
+            });
+          }}
+        >
+          <Image
+            source={{ uri: postImage }}
+            style={styles.headerImage}
+          />
+          <Text style={styles.headerTitle} numberOfLines={1}>{postTitle}</Text>
+          <MaterialIcons name="chevron-right" size={28} color="#888" style={{ marginLeft: 8 }} />
+        </TouchableOpacity>
+      </View>
 
       {/* <BannerAd unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
 
@@ -403,6 +426,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     overflow: 'hidden',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  headerImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: '#f0f0f0',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#222',
+    flex: 1,
   },
 });
 

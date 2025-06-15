@@ -154,6 +154,8 @@ const ChatList = ({ navigation }) => {
           sellerId: chat.seller_id,
           buyerId: chat.buyer_id,
           postId: chat.post_id,
+          postTitle: chat.post.title,
+          postImage: chat.post?.image?.url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
         })}
       >
         <View style={styles.avatarContainer}>
