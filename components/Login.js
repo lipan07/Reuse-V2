@@ -3,7 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, FlatList, TouchableWithoutFeedback, StatusBar } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { Platform } from 'react-native';
 import ModalScreen from './SupportElement/ModalScreen';
+
+import { getMessaging, getToken, onMessage } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
+
 
 const countryCodes = [
    { code: '+1', name: 'United States' },
@@ -131,10 +136,16 @@ const Login = () => {
    const handleOtpSubmit = async () => {
       try {
          console.log(`${process.env.BASE_URL}/login`);
+
+         const messaging = getMessaging(getApp());
+         const fcmToken = await getToken(messaging);
          const response = await fetch(`${process.env.BASE_URL}/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phoneNumber: `${phoneNumber}`, otp }),
+            headers: {
+               'Accept': 'application/json',
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ phoneNumber: `${phoneNumber}`, otp: `${otp}`, fcmToken: `${fcmToken}`, platform: `${Platform.OS}` }),
          });
          const data = await response.json();
          console.log('login user data:');

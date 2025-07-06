@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "965583527872",
+    "project_id": "malaq-5e80c",
+    "storage_bucket": "malaq-5e80c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965583527872:android:fb0ba9aed753df6334b225",
+        "android_client_info": {
+          "package_name": "com.malaq.notify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEGe7hBq_4ldjAJH-Fn58o9RZnwCWK3NY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

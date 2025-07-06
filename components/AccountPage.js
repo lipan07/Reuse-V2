@@ -27,6 +27,18 @@ const AccountPage = ({ navigation }) => {
 
     const handleLogout = async () => {
         try {
+            const token = await AsyncStorage.getItem('authToken');
+            if (token) {
+                await fetch(`${process.env.BASE_URL}/user/offline`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+            }
+
             await AsyncStorage.clear();
             setIsLoggedIn(false);
             navigation.reset({
