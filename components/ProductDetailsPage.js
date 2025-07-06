@@ -183,11 +183,14 @@ const ProductDetails = () => {
     };
 
     const handleChatWithSeller = () => {
-        if (buyerId) {
+        if (buyerId && product?.user?.id && product?.id) {
             navigation.navigate('ChatBox', {
-                sellerId: product.user?.id,
+                sellerId: product.user.id,
                 buyerId,
-                postId: product.id
+                postId: product.id,
+                postTitle: product.title,
+                postImage: product.images?.[0] || null,
+                chatId: null // explicitly set as null to trigger first message logic
             });
         }
     };

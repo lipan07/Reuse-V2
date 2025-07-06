@@ -280,6 +280,9 @@ const MyAdsPage = ({ navigation }) => {
                   >
                     <Icon name="info-circle" size={20} color="#007BFF" style={styles.newPopupIcon} />
                     <Text style={styles.newPopupOptionText}>Details</Text>
+                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                      <Icon name="angle-right" size={20} color="#888" />
+                    </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.newPopupOption}
@@ -292,6 +295,9 @@ const MyAdsPage = ({ navigation }) => {
                   >
                     <Icon name="users" size={20} color="#007BFF" style={styles.newPopupIcon} />
                     <Text style={styles.newPopupOptionText}>Followers</Text>
+                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                      <Icon name="angle-right" size={20} color="#888" />
+                    </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.newPopupOption}
@@ -305,6 +311,9 @@ const MyAdsPage = ({ navigation }) => {
                   >
                     <Icon name="edit" size={20} color="#007BFF" style={styles.newPopupIcon} />
                     <Text style={styles.newPopupOptionText}>Edit</Text>
+                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                      <Icon name="angle-right" size={20} color="#888" />
+                    </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.newPopupOption, styles.newDeleteOption]}
@@ -315,6 +324,9 @@ const MyAdsPage = ({ navigation }) => {
                   >
                     <Icon name="trash" size={20} color="#FF5C5C" style={styles.newPopupIcon} />
                     <Text style={styles.newPopupOptionText}>Delete</Text>
+                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                      <Icon name="angle-right" size={20} color="#888" />
+                    </View>
                   </TouchableOpacity>
                 </View>
               </View>
